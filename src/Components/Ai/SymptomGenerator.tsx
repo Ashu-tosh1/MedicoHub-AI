@@ -23,6 +23,11 @@ export default function SymptomChecker() {
   const [error, setError] = useState('')
   const [currentTab, setCurrentTab] = useState('input')
   const { user } = useUser(); 
+  type UrgencyStyle = {
+    icon: JSX.Element;
+    color: string;
+    textColor: string;
+  };
   
   const handleCheck = async () => {
     if (!symptoms.trim() || !duration.trim()) {
@@ -88,8 +93,14 @@ ${notes.trim() || 'None'}
     }
   }
 
-  const getUrgencyClass = (text: string) => {
-    if (!text) return {};
+  const getUrgencyClass = (text: string): UrgencyStyle => {
+    const defaultStyle = {
+      icon: <Clock className="h-5 w-5 text-amber-500" />,
+      color: 'bg-amber-50 border-amber-200',
+      textColor: 'text-amber-700',
+    };
+  
+    if (!text) return  defaultStyle;
     
     const urgencyMatch = text.match(/Urgency Level.*?(low|medium|high)/i);
     if (!urgencyMatch) return {
@@ -98,7 +109,7 @@ ${notes.trim() || 'None'}
       textColor: 'text-amber-700'
     };
     
-    const urgency = urgencyMatch[1].toLowerCase();
+    const urgency = urgencyMatch[1].toLowerCase() as 'low' | 'medium' | 'high';
     
     const urgencyConfig = {
       low: { icon: <CheckCircle2 className="h-5 w-5 text-green-500" />, color: 'bg-green-50 border-green-200', textColor: 'text-green-700' },
@@ -190,40 +201,48 @@ ${notes.trim() || 'None'}
     if (!diagnosis) return null;
     
     console.log(`Rendering section: ${title}`);
-    const items = extractSectionContent(diagnosis, title);
-    console.log(`Items found for ${title}:`, items);
+    if (typeof title === 'string') {
+      const items = extractSectionContent(diagnosis, title);
+      // Do something with items
     
-    if (items.length === 0) return null;
+      // const items  = extractSectionContent(diagnosis, title);
+      console.log(`Items found for ${title}:`, items);
     
-    return (
-      <div className="space-y-2">
-        <h3 className="font-medium text-base flex items-center gap-2">
-          {icon}
-          {title}
-        </h3>
-        <div className="pl-7">
-          {items.map((item: string | number | bigint | boolean | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | Promise<string | number | bigint | boolean | ReactPortal | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | null | undefined> | null | undefined, i: Key | null | undefined) => {
-            // Check if the item contains a sub-title (e.g. "***Tension headache:")
-            const titleMatch = item.match(/^([^:]+):(.*)/);
-            if (titleMatch) {
+      if (items.length === 0) return null;
+    
+      return (
+        <div className="space-y-2">
+          <h3 className="font-medium text-base flex items-center gap-2">
+            {icon}
+            {title}
+          </h3>
+          <div className="pl-7">
+            {items.map((item: string | number | bigint | boolean | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | Promise<string | number | bigint | boolean | ReactPortal | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | null | undefined> | null | undefined, i: Key | null | undefined) => {
+              // Check if the item contains a sub-title (e.g. "***Tension headache:")
+              if (typeof item === 'string') {
+                const titleMatch = item.match(/^([^:]+):(.*)/);
+                if (titleMatch) {
+                  return (
+                    <div key={i} className="mt-3">
+                      <div className="font-medium">{titleMatch[1].replace(/\*/g, '').trim()}</div>
+                      <div className="mt-1">{titleMatch[2].trim()}</div>
+                    </div>
+                  );
+                }
+              }
+             
+            
               return (
-                <div key={i} className="mt-3">
-                  <div className="font-medium">{titleMatch[1].replace(/\*/g, '').trim()}</div>
-                  <div className="mt-1">{titleMatch[2].trim()}</div>
+                <div key={i} className="flex items-start gap-2 mt-1">
+                  <span className="text-primary">•</span>
+                  <span>{item}</span>
                 </div>
               );
-            }
-            
-            return (
-              <div key={i} className="flex items-start gap-2 mt-1">
-                <span className="text-primary">•</span>
-                <span>{item}</span>
-              </div>
-            );
-          })}
+            })}
+          </div>
         </div>
-      </div>
-    );
+      );
+    }
   }
 
   const urgencyConfig = getUrgencyClass(diagnosis);
