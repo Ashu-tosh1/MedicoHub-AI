@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextRequest, NextResponse } from "next/server"
-import { GoogleGenerativeAI } from '@google/generative-ai'
+import { GoogleGenerativeAI, HarmBlockThreshold, HarmCategory, Part } from '@google/generative-ai'
 import { PrismaClient } from '@prisma/client'
 
 // Initialize Prisma client
@@ -9,35 +9,34 @@ const prisma = new PrismaClient()
 // Initialize the Gemini AI with your API key
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)
 
-const retryWithBackoff = async (fn: { (): Promise<any>; (): any }, retries = 3, delay = 1000) => {
+/**
+ * Retry function with exponential backoff.
+ */
+const retryWithBackoff = async <T>(fn: () => Promise<T>, retries = 3, delay = 1000): Promise<T> => {
   try {
     return await fn()
-  } catch (err) {
+  } catch (err: any) {
     const status = err?.status || err?.statusCode || 500
-    
-    // Only retry on rate limit errors (429)
+
     if (retries > 0 && status === 429) {
       console.log(`Rate limited. Retrying after ${delay}ms, ${retries} retries left`)
-      
-      // Wait for the specified delay
       await new Promise(resolve => setTimeout(resolve, delay))
-      
-      // Retry with exponential backoff
       return retryWithBackoff(fn, retries - 1, delay * 2)
     }
-    
-    // Re-throw the error if we can't retry
+
     throw err
   }
 }
 
-// Helper function to determine urgency level from text
-const extractUrgencyLevel = (text: string) => {
+/**
+ * Extract urgency level from the AI-generated text.
+ */
+const extractUrgencyLevel = (text: string): 'LOW' | 'MODERATE' | 'HIGH' => {
   const urgencyMatch = text.match(/Urgency Level.*?(low|medium|high)/i)
-  if (!urgencyMatch) return 'MODERATE' // default
-  
+  if (!urgencyMatch) return 'MODERATE'
+
   const urgency = urgencyMatch[1].toLowerCase()
-  
+
   switch (urgency) {
     case 'low':
       return 'LOW'
@@ -49,34 +48,34 @@ const extractUrgencyLevel = (text: string) => {
   }
 }
 
-// Helper function to extract possible diseases
-const extractPossibleDiseases = (text: string) => {
-  const diseasesMatch = text.match(/Possible Conditions.*?(?:\n\n|$)/s)
+/**
+ * Extract possible conditions from the AI-generated text.
+ */
+const extractPossibleDiseases = (text: string): string => {
+  const diseasesMatch = text.match(/Possible Conditions.*?(?:\n\n|$)/)
   return diseasesMatch ? diseasesMatch[0] : text.substring(0, 100)
 }
 
-// Helper function to extract recommendations
-const extractRecommendations = (text: string) => {
-  const recommendationsMatch = text.match(/Recommended Next Steps.*?(?:\n\n|$)/s)
+/**
+ * Extract recommendations from the AI-generated text.
+ */
+const extractRecommendations = (text: string): string => {
+  
+  // then match newlines explicitly.
+  const recommendationsMatch = text.match(/Recommended Next Steps.*?(\n\n|$)/)
   return recommendationsMatch ? recommendationsMatch[0] : ''
 }
 
 export async function POST(req: NextRequest) {
   try {
-    const { symptoms, patientId } = await req.json()
+    const { symptoms, patientId }: { symptoms: string; patientId: string } = await req.json()
 
     if (!symptoms || symptoms.trim() === '') {
-      return NextResponse.json(
-        { error: 'No symptoms provided' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'No symptoms provided' }, { status: 400 })
     }
 
     if (!patientId) {
-      return NextResponse.json(
-        { error: 'Patient ID is required' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'Patient ID is required' }, { status: 400 })
     }
 
     const prompt = `
@@ -98,27 +97,31 @@ Based on this, provide a helpful and safe preliminary assessment. Structure your
 Keep the tone supportive and informative. Avoid alarming language unless absolutely necessary.
     `
 
-    // Try different models with retry logic
     const modelOptions = ['gemini-1.5-flash', 'gemini-pro']
-    let text = null
-    let lastError = null
+    let text: string | null = null
+    let lastError: any = null
 
     for (const modelName of modelOptions) {
       if (text) break
-      
+
       try {
         console.log(`Trying model: ${modelName}`)
-        
+
         text = await retryWithBackoff(async () => {
           const model = genAI.getGenerativeModel({ model: modelName })
-          
+
           if (modelName === 'gemini-pro') {
             const result = await model.generateContent(prompt)
             return result.response.text()
-          } 
-          
+          }
+
           const result = await model.generateContent({
-            contents: [{ role: "user", parts: [{ text: prompt }] }],
+            contents: [
+              {
+                role: "user",
+                parts: [{ text: prompt }] as Part[],  
+              },
+            ],
             generationConfig: {
               temperature: 0.2,
               topK: 32,
@@ -127,23 +130,25 @@ Keep the tone supportive and informative. Avoid alarming language unless absolut
             },
             safetySettings: [
               {
-                category: "HARM_CATEGORY_HARASSMENT",
-                threshold: "BLOCK_MEDIUM_AND_ABOVE"
+                category: HarmCategory.HARM_CATEGORY_HARASSMENT,
+                threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
               },
               {
-                category: "HARM_CATEGORY_HATE_SPEECH",
-                threshold: "BLOCK_MEDIUM_AND_ABOVE"
+                category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+                threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
               },
               {
-                category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-                threshold: "BLOCK_MEDIUM_AND_ABOVE"
+                category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+                threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
               },
               {
-                category: "HARM_CATEGORY_DANGEROUS_CONTENT",
-                threshold: "BLOCK_MEDIUM_AND_ABOVE"
-              }
-            ]
+                category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+                threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+              },
+            ],
           })
+          
+
           return result.response.text()
         }, 2, 2000)
 
@@ -162,12 +167,10 @@ Keep the tone supportive and informative. Avoid alarming language unless absolut
       )
     }
 
-    // Extract data for database storage
     const urgencyLevel = extractUrgencyLevel(text)
     const possibleDiseases = extractPossibleDiseases(text)
     const recommendations = extractRecommendations(text)
 
-    // Store AI diagnosis in database
     try {
       const aiDiagnosis = await prisma.aIDiagnosis.create({
         data: {
@@ -175,26 +178,21 @@ Keep the tone supportive and informative. Avoid alarming language unless absolut
           possibleDiseases,
           urgencyLevel,
           recommendations,
-          confidenceScore: 0.85, // Default confidence score
+          confidenceScore: 0.85,
           generatedAt: new Date(),
         }
       })
-      
+
       console.log("AI Diagnosis saved:", aiDiagnosis.id)
     } catch (dbError) {
       console.error("Failed to save diagnosis to database:", dbError)
-      // Continue to return diagnosis even if DB save fails
     }
 
     return NextResponse.json({ diagnosis: text })
   } catch (error) {
     console.error('Symptom checker error:', error)
-    return NextResponse.json(
-      { error: 'Failed to process symptoms' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to process symptoms' }, { status: 500 })
   } finally {
-    // Disconnect from the database to prevent connection leaks
     await prisma.$disconnect()
   }
 }
