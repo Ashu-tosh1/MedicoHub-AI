@@ -1,0 +1,369 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User models
+
+model User {
+  id        String   @id @default(uuid())
+  clerkId   String   @unique
+  email     String   @unique
+  firstName String?
+  lastName  String?
+  role      UserRole @default(PATIENT)
+
+  // Relations
+  patient     Patient?
+  doctor      Doctor?
+  pharmacist  Pharmacist?
+  receptionist Receptionist?
+}
+
+enum UserRole {
+  ADMIN
+  DOCTOR
+  PATIENT
+  PHARMACIST
+  RECEPTIONIST
+}
+
+// Patient information with enhanced health data
+model Patient {
+  id               String   @id @default(uuid())
+  userId           String   @unique
+  name             String
+  age              Int
+  gender           String
+  dateOfBirth      DateTime?
+  phoneNumber      String?
+  address          String?
+  
+  // Enhanced health information
+  bloodType        String?
+  height           Float?   // in cm
+  weight           Float?   // in kg
+  bloodPressure    String?  // stored as "systolic/diastolic" format
+  heartRate        Int?     // beats per minute
+  temperature      Float?   // in Celsius
+  oxygenSaturation Float?   // SpO2 percentage
+  allergies        String?
+  chronicConditions String?
+  medications      String?  // Current medications not in prescriptions
+  emergencyContact String?
+  
+  // Medical history is now moved to PatientMedicalHistory
+  symptoms         PatientSymptom[]
+  medicalHistory   PatientMedicalHistory[]
+  doctorNotes      DoctorNote[]
+
+  // Relations
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  appointments     Appointment[]
+  prescriptions    Prescription[]
+  medicalReports   MedicalReport[]
+  aiDiagnoses      AIDiagnosis[]
+}
+
+// Doctor information
+model Doctor {
+  id           String   @id @default(uuid())
+  userId       String   @unique
+  name         String
+  department   String
+  experience   Int
+  location     String
+  email        String
+  bio          String?
+  image        String?
+
+  // Relations
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  appointments Appointment[]
+  availability DoctorAvailability[]
+  prescriptions Prescription[]
+  medicalReports MedicalReport[]
+  doctorNotes   DoctorNote[]
+}
+
+// Doctor availability slots
+model DoctorAvailability {
+  id        String   @id @default(uuid())
+  doctorId  String
+  date      DateTime
+  timeSlot  String   // Store as "HH:MM" format
+  isBooked  Boolean  @default(false)
+
+  // Relations
+  doctor    Doctor   @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+
+  @@unique([doctorId, date, timeSlot])
+}
+
+// Appointment information
+model Appointment {
+  id          String   @id @default(uuid())
+  patientId   String
+  doctorId    String
+  date        DateTime
+  time        String   // Store as "HH:MM" or "HH:MM AM/PM" format
+  type        String   // e.g., "Checkup", "Consultation", "Follow-up"
+  status      AppointmentStatus @default(PENDING)
+  symptoms    String?
+  notes       String?
+
+  // Relations
+  patient     Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  doctor      Doctor   @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+}
+
+enum AppointmentStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+  IN_PROGRESS
+}
+
+// Patient symptoms tracking
+model PatientSymptom {
+  id          String   @id @default(uuid())
+  patientId   String
+  symptom     String
+  severity    Severity @default(MODERATE)
+  duration    String?  // e.g., "2 days", "1 week"
+  description String?
+  reportedAt  DateTime @default(now())
+  
+  // Relations
+  patient     Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  aiDiagnoses AIDiagnosis[]
+}
+
+enum Severity {
+  MILD
+  MODERATE
+  SEVERE
+  CRITICAL
+}
+
+// Patient medical history
+model PatientMedicalHistory {
+  id          String   @id @default(uuid())
+  patientId   String
+  condition   String
+  diagnosedAt DateTime?
+  treatment   String?
+  status      MedicalConditionStatus @default(ONGOING)
+  notes       String?
+  
+  // Relations
+  patient     Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+}
+
+enum MedicalConditionStatus {
+  ONGOING
+  RESOLVED
+  MANAGED
+  UNKNOWN
+}
+
+// Doctor notes
+model DoctorNote {
+  id          String   @id @default(uuid())
+  patientId   String
+  doctorId    String
+  title       String?
+  content     String
+  noteType    NoteType @default(GENERAL)
+  createdAt   DateTime @default(now())
+  
+  // Relations
+  patient     Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  doctor      Doctor   @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+}
+
+enum NoteType {
+  GENERAL
+  DIAGNOSIS
+  TREATMENT_PLAN
+  FOLLOW_UP
+  OBSERVATION
+}
+
+// Prescription information
+model Prescription {
+  id           String   @id @default(uuid())
+  patientId    String
+  doctorId     String
+  issueDate    DateTime @default(now())
+  expiryDate   DateTime?
+  status       PrescriptionStatus @default(ACTIVE)
+
+  // Relations
+  patient      Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  doctor       Doctor   @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  medications  PrescriptionMedication[]
+}
+
+enum PrescriptionStatus {
+  ACTIVE
+  COMPLETED
+  EXPIRED
+}
+
+// Prescription medications (many-to-many relationship)
+model PrescriptionMedication {
+  id              String   @id @default(uuid())
+  prescriptionId  String
+  medicineId      String
+  dosage          String
+  frequency       String
+  duration        String?
+  instructions    String?
+
+  // Relations
+  prescription    Prescription @relation(fields: [prescriptionId], references: [id], onDelete: Cascade)
+  medicine        Medicine     @relation(fields: [medicineId], references: [id])
+}
+
+// Medical Reports
+model MedicalReport {
+  id          String   @id @default(uuid())
+  patientId   String
+  doctorId    String
+  name        String
+  type        ReportType
+  fileUrl     String?
+  results     String?
+  date        DateTime @default(now())
+  status      ReportStatus @default(PROCESSING)
+
+  // Relations
+  patient     Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  doctor      Doctor   @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  testRequest TestRequest?
+}
+
+enum ReportType {
+  BLOOD_TEST
+  X_RAY
+  MRI
+  CT_SCAN
+  ULTRASOUND
+  OTHER
+}
+
+enum ReportStatus {
+  PROCESSING
+  READY
+  REVIEWED
+}
+
+// Test requests
+model TestRequest {
+  id              String     @id @default(uuid())
+  patientId       String
+  requestedBy     String     // doctorId
+  testName        String
+  testType        ReportType
+  description     String?
+  status          TestStatus @default(REQUESTED)
+  resultId        String?    @unique    // Link to the MedicalReport ID once uploaded
+  requestDate     DateTime   @default(now())
+
+  // Relations
+  medicalReport   MedicalReport? @relation(fields: [resultId], references: [id])
+}
+
+enum TestStatus {
+  REQUESTED
+  PENDING
+  COMPLETED
+  REVIEWED
+}
+
+// AI-generated diagnosis and recommendations
+model AIDiagnosis {
+  id              String   @id @default(uuid())
+  patientId       String
+  symptomId       String?
+  
+  // AI-generated content
+  possibleDiseases String
+  urgencyLevel     UrgencyLevel @default(MODERATE)
+  confidenceScore  Float   // 0-1 value
+  recommendations  String?
+  furtherTestsRecommended String?
+  generatedAt      DateTime @default(now())
+  
+  // Relations
+  patient         Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  symptom         PatientSymptom? @relation(fields: [symptomId], references: [id])
+}
+
+enum UrgencyLevel {
+  LOW
+  MODERATE
+  HIGH
+  EMERGENCY
+}
+
+// Pharmacy related models
+model Medicine {
+  id                String   @id @default(uuid())
+  name              String
+  genericName       String?
+  manufacturer      String?
+  category          String?
+  description       String?
+  dosageForm        String?  // e.g., "Tablet", "Syrup", "Injection"
+  strength          String?  // e.g., "500mg", "10mg/5ml"
+
+  // Relations
+  inventoryItems    InventoryItem[]
+  prescriptionItems PrescriptionMedication[]
+}
+
+model InventoryItem {
+  id            String   @id @default(uuid())
+  medicineId    String
+  batchNumber   String
+  quantity      Int
+  expiryDate    DateTime
+  purchaseDate  DateTime @default(now())
+  price         Float
+
+  // Relations
+  medicine      Medicine @relation(fields: [medicineId], references: [id])
+}
+
+// Staff models
+model Pharmacist {
+  id          String   @id @default(uuid())
+  userId      String   @unique
+  name        String
+  licenseNumber String?
+
+  // Relations
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Receptionist {
+  id          String   @id @default(uuid())
+  userId      String   @unique
+  name        String
+
+  // Relations
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
