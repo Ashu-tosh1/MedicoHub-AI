@@ -1,8 +1,17 @@
 import prisma from '@/lib/prisma';
 import { NextRequest, NextResponse } from 'next/server';
 
-export async function GET(_req: NextRequest, context: { params: { doctorId: string } }) {
-  const { doctorId } = context.params;
+export interface DoctorIdContext {
+  params: {
+    doctorId: string;
+  };
+}
+
+export async function GET(
+  req: NextRequest,
+  { params }: DoctorIdContext
+) {
+  const { doctorId } = params;
 
   if (!doctorId) {
     return NextResponse.json({ error: 'Doctor ID is required' }, { status: 400 });
@@ -26,12 +35,15 @@ export async function GET(_req: NextRequest, context: { params: { doctorId: stri
 
     const formattedAvailability: Record<string, string[]> = {};
 
-    availability.forEach(({ date, timeSlot }) => {
-      const formattedDate = date.toISOString().split('T')[0]; // Format to 'YYYY-MM-DD'
-      if (!formattedAvailability[formattedDate]) {
-        formattedAvailability[formattedDate] = [];
+    availability.forEach(({ date, timeSlot, isBooked }) => {
+      // Only include available slots (not booked)
+      if (!isBooked) {
+        const formattedDate = date.toISOString().split('T')[0]; // Format to 'YYYY-MM-DD'
+        if (!formattedAvailability[formattedDate]) {
+          formattedAvailability[formattedDate] = [];
+        }
+        formattedAvailability[formattedDate].push(timeSlot);
       }
-      formattedAvailability[formattedDate].push(timeSlot);
     });
 
     return NextResponse.json(formattedAvailability, { status: 200 });
