@@ -3,8 +3,8 @@ import { NextRequest, NextResponse } from 'next/server';
 
 
 // Handle GET request to fetch availability for a doctor
-export async function GET(_req: NextRequest, { params }: { params: { doctorId: string } }) {
-  const { doctorId } =await params;
+export async function GET(_req: NextRequest,context: { params: { doctorId: string } }) {
+  const { doctorId } = context.params;
 
   if (!doctorId) {
     return NextResponse.json({ error: 'Doctor ID is required' }, { status: 400 });
