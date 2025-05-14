@@ -12,6 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs"
 import { cn } from "@/lib/utils"
 import { useUser } from '@clerk/nextjs'
 import axios from 'axios'
+import PatientSidebar from '../Patient/PatientSidebar'
 
 export default function SymptomChecker() {
   const [symptoms, setSymptoms] = useState('')
@@ -252,6 +253,7 @@ ${notes.trim() || 'None'}
       {/* Space for sidebar - you'll import your sidebar component here */}
       <div className="w-64 bg-white border-r border-gray-200">
         {/* Your sidebar will go here */}
+        <PatientSidebar/>
       </div>
 
       <div className="flex-1 p-6">
