@@ -1,9 +1,7 @@
 import prisma from '@/lib/prisma';
 import { NextRequest, NextResponse } from 'next/server';
 
-
-// Handle GET request to fetch availability for a doctor
-export async function GET(_req: NextRequest,context: { params: { doctorId: string } }) {
+export async function GET(_req: NextRequest, context: { params: { doctorId: string } }) {
   const { doctorId } = context.params;
 
   if (!doctorId) {
@@ -26,7 +24,6 @@ export async function GET(_req: NextRequest,context: { params: { doctorId: strin
       return NextResponse.json({ error: 'Availability not found for this doctor.' }, { status: 404 });
     }
 
-    // Format the availability into a map by date
     const formattedAvailability: Record<string, string[]> = {};
 
     availability.forEach(({ date, timeSlot }) => {
