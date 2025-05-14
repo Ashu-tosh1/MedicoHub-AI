@@ -1,15 +1,10 @@
 import prisma from '@/lib/prisma';
 import { NextRequest, NextResponse } from 'next/server';
 
-export interface DoctorIdContext {
-  params: {
-    doctorId: string;
-  };
-}
-
+// Next.js 15.3.2 requires a specific type for route parameters
 export async function GET(
   req: NextRequest,
-  { params }: DoctorIdContext
+  { params }: { params: { doctorId: string } }
 ) {
   const { doctorId } = params;
 
