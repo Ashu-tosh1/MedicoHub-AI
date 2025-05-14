@@ -1,14 +1,15 @@
 import prisma from '@/lib/prisma';
 import { NextRequest, NextResponse } from 'next/server';
 
-export async function GET(_req: NextRequest, { params }: { params: { doctorId: string } }) {
-  const { doctorId } = params;
-
-  if (!doctorId) {
-    return NextResponse.json({ error: 'Doctor ID is required' }, { status: 400 });
-  }
-
+export async function POST(req: NextRequest) {
   try {
+    const body = await req.json();
+    const { doctorId } = body;
+
+    if (!doctorId) {
+      return NextResponse.json({ error: 'Doctor ID is required' }, { status: 400 });
+    }
+
     const availability = await prisma.doctorAvailability.findMany({
       where: {
         doctorId,

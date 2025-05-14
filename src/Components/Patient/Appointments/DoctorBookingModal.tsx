@@ -31,12 +31,15 @@ export const DoctorBookingModal = ({ selectedDoctor, onClose }: Props) => {
 
   const fetchAvailability = async (doctorId: string | number) => {
     try {
-      const response = await axios.get(`/api/doctor/${doctorId}/availability`);
+      const response = await axios.post('/api/doctor/availability', {
+        doctorId,
+      });
       setAvailability(response.data);
     } catch (error) {
       console.error('Error fetching doctor availability:', error);
     }
   };
+  
 
   useEffect(() => {
     if (selectedDoctor.id) {
