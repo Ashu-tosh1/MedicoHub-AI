@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 
 // Handle GET request to fetch availability for a doctor
-export async function GET(req: NextRequest, { params }: { params: { doctorId: string } }) {
+export async function GET(_req: NextRequest, { params }: { params: { doctorId: string } }) {
   const { doctorId } =await params;
 
   if (!doctorId) {

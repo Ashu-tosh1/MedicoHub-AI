@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
+import Image from "next/image";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -43,7 +44,9 @@ export default function LoginPage() {
       <div className="relative z-10 w-[90vw] h-[90vh] flex shadow-2xl rounded-3xl overflow-hidden backdrop-blur-md bg-white/30 border border-white/50">
         {/* Left Side - Doctor Image */}
         <div className="w-1/2 relative flex items-center justify-center bg-gradient-to-br from-indigo-500 to-purple-600">
-          <img
+          <Image
+            height={1}
+            width={1}
             src="/Doctor.png"
             alt="Doctor Illustration"
             className="w-[450px] h-auto object-contain drop-shadow-2xl"

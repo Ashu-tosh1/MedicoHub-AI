@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 
 import { Calendar, X } from 'lucide-react';
 import { Doctor } from '@/lib/mockData';
+import Image from 'next/image';
 
 interface DoctorCardProps {
   doctors: Doctor[];
@@ -39,7 +40,9 @@ const DoctorCard: React.FC<DoctorCardProps> = ({ doctors, onSelectDoctor }) => {
             onMouseLeave={() => setHoverDoctor(null)}
           >
             <div className="p-5 text-center">
-              <img
+              <Image
+                height={1}
+                width={1}
                 src={doctor.image}
                 alt={doctor.name}
                 className="w-24 h-24 rounded-full object-cover mx-auto border-4 border-blue-300 shadow-lg transition-transform duration-300 group-hover:scale-105"
