@@ -26,7 +26,7 @@ const getNextWeekDates = () => {
 };
 
 const DoctorCard: React.FC<DoctorCardProps> = ({ doctors, onSelectDoctor }) => {
-  const [hoverDoctor, setHoverDoctor] = useState<number | null>(null);
+  const [hoverDoctor, setHoverDoctor] = useState<string | null>(null);
   const weekDates = getNextWeekDates();
 
   return (
