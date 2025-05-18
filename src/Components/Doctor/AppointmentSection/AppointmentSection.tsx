@@ -4,8 +4,9 @@ import React, { useState, useEffect } from "react";
 import { Calendar, Clock, Search } from "lucide-react";
 import axios from "axios";
 import { useUser } from "@clerk/nextjs";
-// import DoctorSidebar from "../DoctorSidebar/DoctorSidebar";
+
 import { appointment } from "@/lib/mockData";
+import SidebarContent from "../DoctorSidebar/DoctorSidebar";
 
 const Appointments = () => {
     const { user } = useUser();
@@ -64,8 +65,12 @@ const Appointments = () => {
     
   return (
     <div className="flex">
-      {/* <DoctorSidebar {doctor} /> */}
-      <div className="flex-1 lg:ml-64 transition-all duration-300">
+      {/* <SidebarContent  /> */}
+     
+        <SidebarContent  /> 
+       
+      <div className="flex-1  transition-all duration-300">
+        
         <div className="p-6 bg-blue-50 min-h-screen">
           <div className="mb-6">
             <h1 className="text-2xl font-bold text-blue-800 mt-8 lg:mt-0">

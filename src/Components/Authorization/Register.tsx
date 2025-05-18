@@ -57,7 +57,10 @@ export default function AuthPage() {
           />
           <h2 className="text-3xl font-semibold mb-2">Welcome to MedicoHub</h2>
           <p className="text-sm text-white/80 text-center px-6">
-            Your one-stop platform for smarter healthcare
+            Your one-stop platform for All the Medical Services
+          </p>
+          <p className="text-sm text-white/80 text-center px-6">
+           Integerated With AI for your better Health
           </p>
         </div>
 
@@ -128,11 +131,7 @@ export default function AuthPage() {
             </a>
           </p>
 
-          <p className="mt-6 text-xs text-center text-gray-500">
-            By signing up, you agree to our{" "}
-            <a href="#" className="underline text-indigo-500">Terms of Service</a> and{" "}
-            <a href="#" className="underline text-indigo-500">Privacy Policy</a>.
-          </p>
+         
         </div>
       </div>
     </div>

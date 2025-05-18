@@ -119,7 +119,9 @@ export const DoctorBookingModal = ({ selectedDoctor, onClose }: Props) => {
         {isBookingComplete ? (
           <div className="space-y-6 text-center">
             <CheckCircle className="w-12 h-12 text-green-500 mx-auto" />
-            <h3 className="text-2xl font-bold text-gray-800 dark:text-white">Appointment Confirmed</h3>
+            <h2 className="text-2xl font-bold text-gray-800 dark:text-white">Appointment Scheduled</h2>
+            <h3 className="text-2xl font-bold text-gray-800 dark:text-white" >  Wait for Doctor confirmation </h3>
+            
             <p className="text-gray-700 dark:text-gray-300">
               Your appointment with <strong>{selectedDoctor.name}</strong> is scheduled for:
             </p>
@@ -127,7 +129,7 @@ export const DoctorBookingModal = ({ selectedDoctor, onClose }: Props) => {
               {formatDate(selectedDate!)} at {selectedTime}
             </p>
             <p className="text-sm text-gray-600 dark:text-gray-400 bg-blue-50 dark:bg-blue-900 p-3 rounded-md">
-              A confirmation email has been sent. Please arrive 15 minutes early.
+              You are requested to join the VideoCall before 5 minutes.
             </p>
             <button
               onClick={handleClose}

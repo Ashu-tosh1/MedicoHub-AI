@@ -6,6 +6,7 @@ import { Calendar, Clock, Phone, Video } from 'lucide-react';
 import { formatAppointmentTime, groupAppointmentsByDate } from '@/lib/utils';
 import { useUser } from '@clerk/nextjs';
 import PatientSidebar from '../Patient/PatientSidebar';
+import SidebarContent from '../Doctor/DoctorSidebar/DoctorSidebar';
 
 
 
@@ -57,7 +58,7 @@ const VideoCalls = () => {
 
         const data = await response.json();
         setAppointments(data.appointments);
-
+        console.log(data)
         if (data.appointments.length > 0) {
           setUserRole(data.appointments[0].doctor ? 'PATIENT' : 'DOCTOR');
         }
@@ -122,7 +123,9 @@ const VideoCalls = () => {
         {userRole === 'DOCTOR' && (
           <div className="w-64 bg-gray-100 p-4 border-r">
             {/* <DoctorSidebar /> */}
-            <div className="text-gray-600 font-semibold">Doctor Sidebar</div>
+            {/* <SidebarContent /> */}
+            {/* <h1>Hey </h1> */}
+            <div className="text-gray-600 font-semibold"><SidebarContent/></div>
           </div>
         )}
         <div className="flex-1 container mx-auto px-4 py-8">
@@ -142,9 +145,9 @@ const VideoCalls = () => {
   }
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex ">
       {userRole === 'PATIENT' && (
-        <div className="w-64 bg-gray-100 p-4 border-r">
+        <div className="w-64 h-[500px] bg-gray-100 p-4 border-r">
           {/* <PatientSidebar /> */}
                   <div className="text-gray-600 font-semibold">
                       <PatientSidebar/>
@@ -152,9 +155,9 @@ const VideoCalls = () => {
         </div>
       )}
       {userRole === 'DOCTOR' && (
-        <div className="w-64 bg-gray-100 p-4 border-r">
-          {/* <DoctorSidebar /> */}
-          <div className="text-gray-600 font-semibold">Doctor Sidebar</div>
+        
+        <div  >
+           <SidebarContent/> 
         </div>
       )}
       <div className="flex-1 container mx-auto px-4 py-8">

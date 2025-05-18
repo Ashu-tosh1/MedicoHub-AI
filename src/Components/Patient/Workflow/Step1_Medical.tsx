@@ -73,7 +73,7 @@ const Step1_Medical: React.FC<Step1Props> = ({ nextStep, appointmentId }) => {
         <Calendar className="text-blue-600" size={32} />
       </div>
       <h2 className="text-2xl font-bold text-gray-800 mt-4 mb-2">Welcome to Your Appointment</h2>
-      <p className="text-gray-600">Please complete the following steps for your visit with {appointment.doctorName}</p>
+      <p className="text-gray-600">Please Upload the  following details for your consultation with {appointment.doctorName}</p>
     </div>
     
     <div className="bg-blue-50 p-5 rounded-lg border border-blue-100 mb-6">

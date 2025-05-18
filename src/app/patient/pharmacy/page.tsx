@@ -102,8 +102,10 @@ export default function MedicineShopPage() {
       
 
 
-    return (
-        <div className="max-w-7xl mx-auto p-4">
+  return (
+      
+      <div className="max-w-7xl mx-auto p-4">
+        
           <h1 className="text-3xl font-bold mb-8 text-center">Medicine Shop</h1>
       
           <PrescribedMedicineAlert 

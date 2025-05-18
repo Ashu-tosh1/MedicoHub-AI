@@ -1,17 +1,20 @@
 import SymptomChecker from '@/Components/Ai/SymptomGenerator'
+import Navbar from '@/Components/Homepage/Navbar'
 import React from 'react'
 
 const page = () => {
   return (
-    <div className="container mx-auto py-8">
-      <h1 className="text-2xl font-bold mb-6">Patient Dashboard</h1>
-      
-  
-      
-      <div className="mt-8">
-        <SymptomChecker />
-      </div>
-    </div>
+    <div>
+     
+    <div className="fixed top-0 left-0 w-full z-50">
+   <Navbar />
+ </div>
+
+ <div className="mt-[54px]"> 
+   <SymptomChecker/>
+ </div>
+         
+   </div>
   )
 }
 

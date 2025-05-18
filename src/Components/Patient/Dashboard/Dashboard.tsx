@@ -145,15 +145,15 @@ export default function PatientDashboard() {
               <motion.div whileHover={{ scale: 1.05 }} className="relative">
                
               </motion.div>
-              <Link href={'/patient/doctors'} >
+              {/* <Link href={'/patient/profile'} >
               <motion.button
                 
                 whileHover={{ scale: 1.05 }}
                 className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
               >
-                Book Appointment
+                Profile
               </motion.button>
-              </Link>
+              </Link> */}
               
             </div>
           </div>

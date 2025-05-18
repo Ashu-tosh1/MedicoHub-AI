@@ -5,6 +5,7 @@ import React, { useState, useEffect } from "react";
 import ConsultationWorkflow from "./WorkFlow";
 import PatientInfoDisplay from "./PatientInfo";
 import SidebarNavigation from "./SidebarNavigation";
+import SidebarContent from "../DoctorSidebar/DoctorSidebar";
 // import DoctorSidebar from "@/app/(doctor)/sidebar/page";
 
 // Type Definitions
@@ -70,12 +71,12 @@ const PatientSection = () => {
   return (
     <div className="flex min-h-screen bg-blue-100">
       {/* Main Sidebar */}
-      {/* <aside className="w-64 bg-blue-200 hidden md:flex flex-col justify-between">
-        <DoctorSidebar />
-      </aside> */}
+      {/* <aside className="w-64 bg-blue-200 hidden md:flex flex-col justify-between"> */}
+        <SidebarContent />
+      {/* </aside> */}
 
       {/* Patient Sidebar */}
-      <aside className="w-64 bg-blue-50 mt-[50px] hidden md:block">
+      <aside className="w-64 bg-blue-50  hidden md:block">
         <SidebarNavigation
           patients={patients}
           activePatient={activePatient}

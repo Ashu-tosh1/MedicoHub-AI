@@ -1,58 +1,83 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
 import {
-  Menu,
-  X,
   BarChart3,
   CalendarClock,
   Users,
-  FileText,
-  Activity,
-  Settings,
+  // FileText,
+  // Activity,
+  // Settings,
+  Menu,
+  X,
+  Video,
 } from 'lucide-react';
 
-interface DoctorSidebarProps {
-  doctor: {
-    name: string;
-    department: string;
-  };
+interface Doctor {
+  name: string;
+  department: string;
 }
 
-const NavItem = ({
-  icon,
-  text,
-  active = false,
-  expanded,
-}: {
-  icon: React.ReactNode;
-  text: string;
-  active?: boolean;
-  expanded: boolean;
-}) => {
-  return (
-    <div
-      className={`flex items-center p-2 rounded-lg ${
-        active ? 'bg-indigo-800' : 'hover:bg-indigo-800'
-      } cursor-pointer`}
-    >
-      <div className={`${expanded ? 'mr-3' : 'mx-auto'}`}>{icon}</div>
-      {expanded && <span>{text}</span>}
-    </div>
-  );
-};
-
-export default function DoctorSidebar({ doctor }: DoctorSidebarProps) {
+export default function SidebarContent() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [doctor, setDoctor] = useState<Doctor | null>(null);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+  const pathname = usePathname();
+
+  useEffect(() => {
+    async function fetchDoctor() {
+      try {
+        const res = await fetch('/api/doctor/sidebar');
+        if (!res.ok) throw new Error('Failed to fetch doctor info');
+        const data = await res.json();
+        setDoctor(data);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchDoctor();
+  }, []);
+
+  if (loading) return <div className="p-4 text-white">Loading doctor info...</div>;
+  if (!doctor) return <div className="p-4 text-white">Doctor info not found.</div>;
+
+  const NavItem = ({
+    icon,
+    text,
+    route,
+    expanded,
+  }: {
+    icon: React.ReactNode;
+    text: string;
+    route: string;
+    expanded: boolean;
+  }) => {
+    const isActive = pathname === route;
+
+    return (
+      <div
+        onClick={() => router.push(route)}
+        className={`flex items-center p-2 rounded-lg cursor-pointer transition-colors ${
+          isActive ? 'bg-indigo-800' : 'hover:bg-indigo-700'
+        }`}
+      >
+        <div className={`${expanded ? 'mr-3' : 'mx-auto'}`}>{icon}</div>
+        {expanded && <span>{text}</span>}
+      </div>
+    );
+  };
 
   return (
     <div
       className={`${
         sidebarOpen ? 'w-64' : 'w-20'
-      } bg-indigo-900 text-white transition-all duration-300 ease-in-out`}
+      } bg-indigo-900 text-white transition-all h-[800px] duration-300 ease-in-out`}
     >
       <div className="flex flex-col h-full">
-        {/* Header */}
         <div className="p-4 flex items-center justify-between border-b border-indigo-800">
           {sidebarOpen ? (
             <h2 className="text-xl font-semibold">MedicoHub</h2>
@@ -67,7 +92,6 @@ export default function DoctorSidebar({ doctor }: DoctorSidebarProps) {
           </button>
         </div>
 
-        {/* Doctor Info */}
         <div className="p-4">
           <div className="flex items-center space-x-4 mb-8">
             <div className="h-10 w-10 rounded-full bg-indigo-700 flex items-center justify-center text-sm font-bold">
@@ -81,14 +105,13 @@ export default function DoctorSidebar({ doctor }: DoctorSidebarProps) {
             )}
           </div>
 
-          {/* Navigation */}
           <nav className="space-y-2">
-            <NavItem icon={<BarChart3 />} text="Dashboard" active={true} expanded={sidebarOpen} />
-            <NavItem icon={<CalendarClock />} text="Appointments" expanded={sidebarOpen} />
-            <NavItem icon={<Users />} text="Patients" expanded={sidebarOpen} />
-            <NavItem icon={<FileText />} text="Medical Reports" expanded={sidebarOpen} />
-            <NavItem icon={<Activity />} text="Analytics" expanded={sidebarOpen} />
-            <NavItem icon={<Settings />} text="Settings" expanded={sidebarOpen} />
+            <NavItem icon={<BarChart3 />} text="Dashboard" route="/doctor/dashboard" expanded={sidebarOpen} />
+            <NavItem icon={<CalendarClock />} text="Appointments" route="/doctor/appointments" expanded={sidebarOpen} />
+            <NavItem icon={<Users />} text="Patients" route="/doctor/patients" expanded={sidebarOpen} />
+            <NavItem icon={<Video />} text="Video Call" route="/doctor/videocall" expanded={sidebarOpen} />
+            {/* <NavItem icon={<Activity />} text="Analytics" route="/doctor/analytics" expanded={sidebarOpen} />
+            <NavItem icon={<Settings />} text="Settings" route="/doctor/settings" expanded={sidebarOpen} /> */}
           </nav>
         </div>
       </div>

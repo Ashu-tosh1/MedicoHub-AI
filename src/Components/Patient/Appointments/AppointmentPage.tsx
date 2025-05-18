@@ -85,7 +85,7 @@ const AppointmentPage: React.FC = () => {
 
   return (
     <div className="min-h-screen flex bg-gradient-to-br from-blue-50 via-white to-blue-100 pt-8 pb-12">
-      <div className='mr-[250px]'>
+      <div className='mr-[250px] '>
         <PatientSidebar />
       </div>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full animate-fadeIn">

@@ -13,8 +13,9 @@ import {
   FileText,
  
 } from 'lucide-react';
-import DoctorSidebar from '../DoctorSidebar/DoctorSidebar';
+// import DoctorSidebar from '../DoctorSidebar/DoctorSidebar';
 import { Doctor, MedicalReport } from '@/lib/mockData';
+import SidebarContent from '../DoctorSidebar/DoctorSidebar';
 
 // Define TypeScript interfaces
 // Renamed to use PascalCase as is standard in TypeScript
@@ -121,7 +122,7 @@ export default function DoctorDashboard({ doctor }: DoctorDashboardProps) {
   return (
     <div className="flex h-screen bg-gray-100">
       {/* Sidebar */}
-      <DoctorSidebar doctor={{ name: doctor.name, department: doctor.department }} />
+      <SidebarContent/> 
       {/* Main Content */}
       <div className="flex-1 overflow-auto">
         {/* Top Header */}
