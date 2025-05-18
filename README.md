@@ -34,8 +34,83 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details. -->
+step-1
+login
+![alt text](image-2.png)
+
+register
+![alt text](image-3.png)
+
+step-2
+homepage
+![alt text](image-4.png)
+![alt text](image-5.png)
+
+step-3
+Patient DashbOard
 
 
-![alt text](image.png)
 
-![alt text](image-1.png)
+![alt text](image-6.png)
+
+step-4
+![alt text](image-9.png)
+
+step-4 response
+![alt text](image-10.png)
+![alt text](image-11.png)
+
+
+Schedule appointment
+step-5 List of doctors
+![alt text](image-7.png)
+
+
+step-6 Doctorbooking
+![alt text](image-8.png)
+![alt text](image-12.png)
+
+step-7 Doctor Login
+doctor Dashboard
+![alt text](image-13.png)
+
+Step-8 Doctor Confirms the appointment
+![alt text](image-14.png)
+
+Step-9 Patient check the appointment status 
+![alt text](image-15.png)
+
+step-10 vIDEO CALL
+![alt text](image-16.png)
+![alt text](image-17.png)
+by doctor
+![alt text](image-25.png)
+
+step-11 upload details
+![alt text](image-18.png)
+
+![alt text](image-19.png)
+
+step-12 doctor receives it 
+![alt text](image-20.png)
+
+step-13 doctor response and upload recommended tests
+![alt text](image-21.png)
+
+step-14 patient receives and upload the reports 
+![alt text](image-22.png)
+![alt text](image-23.png)
+
+step-15 doctor receives the reports and upload the prescription
+![alt text](image-24.png)
+![alt text](image-26.png)
+
+step-16 patient receives the prescription and a small pharmacy page which indiactes the prescibe medication
+![alt text](image-27.png)
+
+step-17 patient profile
+![alt text](image-28.png)
+
+step-18 medial history
+![alt text](image-29.png)
+![alt text](image-30.png)
