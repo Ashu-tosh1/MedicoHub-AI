@@ -77,3 +77,48 @@ interface DoctorStats {
   appointmentsByType: Record<string, number>;
 }
 
+
+// types/medicine.ts
+export interface Medicine {
+  id: string;
+  name: string;
+  genericName?: string;
+  manufacturer?: string;
+  category?: string;
+  description?: string;
+  dosageForm?: string;
+  strength?: string;
+  price?: number; // You might want to add this from InventoryItem
+}
+
+export interface CartItem {
+  medicine: Medicine;
+  quantity: number;
+}
+
+export interface PrescriptionMedication {
+  id: string;
+  medicineId: string;
+  dosage: string;
+  frequency: string;
+  duration?: string;
+  instructions?: string;
+}
+
+export interface Prescription {
+  id: string;
+  patientId: string;
+  doctorId: string;
+  issueDate: string;
+  expiryDate?: string;
+  status: 'ACTIVE' | 'COMPLETED' | 'EXPIRED';
+  medications: PrescriptionMedication[];
+}
+
+export interface Order {
+  userId: string;
+  items: CartItem[];
+  address: string;
+  phoneNumber: string;
+  totalAmount: number;
+}

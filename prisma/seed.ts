@@ -1,131 +1,125 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { PrismaClient, UserRole } from '@prisma/client';
-import { faker } from '@faker-js/faker';
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('Start seeding doctors and availability...');
-
-  // Create doctor users
-  const doctorUsers = await createDoctors(10);
-
-  // Create doctor availability for next 2 months
-  await createDoctorAvailabilityForTwoMonths(doctorUsers.map(d => d.doctor));
-
-  console.log('Doctor seeding completed successfully!');
-}
-
-async function createUser(clerkId: string, email: string, firstName: string, lastName: string, role: UserRole) {
-  const user = await prisma.user.create({
-    data: {
-      clerkId,
-      email,
-      firstName,
-      lastName,
-      role
-    }
-  });
-  
-  console.log(`Created user: ${user.email} with role: ${user.role}`);
-  return user;
-}
-
-async function createDoctors(count: number) {
-  console.log(`Creating ${count} doctors...`);
-  
-  const doctors = [];
-  const departments = ['Cardiology', 'Neurology', 'Pediatrics', 'Orthopedics', 'Dermatology', 'Gynecology', 'Ophthalmology', 'ENT'];
-  const locations = ['Building A', 'Building B', 'East Wing', 'West Wing', 'Main Campus'];
-  
-  for (let i = 0; i < count; i++) {
-    const firstName = faker.person.firstName();
-    const lastName = faker.person.lastName();
-    const email = faker.internet.email({ firstName, lastName }).toLowerCase();
-    const clerkId = `doc_${faker.string.uuid()}`;
-    
-    const user = await createUser(clerkId, email, firstName, lastName, UserRole.DOCTOR);
-    
-    const doctor = await prisma.doctor.create({
-      data: {
-        userId: user.id,
-        name: `Dr. ${firstName} ${lastName}`,
-        department: faker.helpers.arrayElement(departments),
-        experience: faker.number.int({ min: 1, max: 30 }),
-        location: faker.helpers.arrayElement(locations),
-        email: email,
-        bio: faker.lorem.paragraph(),
-        image: faker.image.avatar()
-      }
-    });
-    
-    console.log(`Created doctor: ${doctor.name} in ${doctor.department}`);
-    doctors.push({ user, doctor });
-  }
-  
-  return doctors;
-}
-
-async function createDoctorAvailabilityForTwoMonths(doctors: any[]) {
-  console.log('Creating doctor availability for the next 2 months...');
-  
-  const timeSlots = [
-    '09:00', '09:30', '10:00', '10:30', '11:00', '11:30', 
-    '13:00', '13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30'
+  const medicines = [
+    {
+      name: "Paracetamol",
+      genericName: "Acetaminophen",
+      manufacturer: "PharmaCorp",
+      category: "Pain Relief",
+      description: "Used for relieving mild to moderate pain and reducing fever.",
+      dosageForm: "Tablet",
+      strength: "500mg",
+    },
+    {
+      name: "Amoxicillin",
+      genericName: "Amoxicillin",
+      manufacturer: "HealWell",
+      category: "Antibiotic",
+      description: "Used to treat various bacterial infections.",
+      dosageForm: "Capsule",
+      strength: "250mg",
+    },
+    {
+      name: "Cetirizine",
+      genericName: "Cetirizine Hydrochloride",
+      manufacturer: "AllergyFree",
+      category: "Antihistamine",
+      description: "Used for allergy relief.",
+      dosageForm: "Tablet",
+      strength: "10mg",
+    },
+    {
+      name: "Omeprazole",
+      genericName: "Omeprazole",
+      manufacturer: "DigestCare",
+      category: "Antacid",
+      description: "Used to reduce stomach acid.",
+      dosageForm: "Capsule",
+      strength: "20mg",
+    },
+    {
+      name: "Metformin",
+      genericName: "Metformin Hydrochloride",
+      manufacturer: "DiabetX",
+      category: "Antidiabetic",
+      description: "Used to treat type 2 diabetes.",
+      dosageForm: "Tablet",
+      strength: "500mg",
+    },
+    {
+      name: "Azithromycin",
+      genericName: "Azithromycin",
+      manufacturer: "BactiKill",
+      category: "Antibiotic",
+      description: "Used to treat a variety of bacterial infections.",
+      dosageForm: "Tablet",
+      strength: "250mg",
+    },
+    {
+      name: "Ibuprofen",
+      genericName: "Ibuprofen",
+      manufacturer: "ReliefX",
+      category: "Pain Relief",
+      description: "Used to reduce fever and treat pain or inflammation.",
+      dosageForm: "Tablet",
+      strength: "400mg",
+    },
+    {
+      name: "Loratadine",
+      genericName: "Loratadine",
+      manufacturer: "ClearAir",
+      category: "Antihistamine",
+      description: "Used for allergy symptoms relief.",
+      dosageForm: "Tablet",
+      strength: "10mg",
+    },
+    {
+      name: "Salbutamol",
+      genericName: "Albuterol",
+      manufacturer: "BreathEasy",
+      category: "Bronchodilator",
+      description: "Used for asthma and other breathing conditions.",
+      dosageForm: "Inhaler",
+      strength: "100mcg",
+    },
+    {
+      name: "Pantoprazole",
+      genericName: "Pantoprazole Sodium",
+      manufacturer: "AcidGone",
+      category: "Antacid",
+      description: "Used to treat gastroesophageal reflux disease (GERD).",
+      dosageForm: "Tablet",
+      strength: "40mg",
+    },
   ];
-  
-  // Calculate start and end dates (2 months period)
-  const startDate = new Date();
-  startDate.setHours(0, 0, 0, 0);
-  
-  const endDate = new Date();
-  endDate.setMonth(endDate.getMonth() + 2);
-  endDate.setHours(23, 59, 59, 999);
-  
-  for (const doctor of doctors) {
-    console.log(`Creating availability slots for Dr. ${doctor.name}`);
-    
-    // Loop through each day for the next 2 months
-    const currentDate = new Date(startDate);
-    let slotsCreated = 0;
-    
-    while (currentDate <= endDate) {
-      // Skip weekends (0 = Sunday, 6 = Saturday)
-      const dayOfWeek = currentDate.getDay();
-      if (dayOfWeek !== 0 && dayOfWeek !== 6) {
-        // Each doctor has 5-8 slots per weekday
-        const dailySlots = faker.helpers.arrayElements(
-          timeSlots, 
-          faker.number.int({ min: 5, max: 8 })
-        );
-        
-        for (const timeSlot of dailySlots) {
-          await prisma.doctorAvailability.create({
-            data: {
-              doctorId: doctor.id,
-              date: new Date(currentDate),
-              timeSlot: timeSlot,
-              isBooked: false // Default to available slots
-            }
-          });
-          slotsCreated++;
-        }
-      }
-      
-      // Move to next day
-      currentDate.setDate(currentDate.getDate() + 1);
-    }
-    
-    console.log(`Created ${slotsCreated} availability slots for Dr. ${doctor.name}`);
+
+  for (const med of medicines) {
+    const createdMedicine = await prisma.medicine.create({
+      data: {
+        ...med,
+        inventoryItems: {
+          create: {
+            batchNumber: `BATCH-${Math.floor(Math.random() * 10000)}`,
+            quantity: Math.floor(Math.random() * 500) + 50,
+            expiryDate: new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
+            price: parseFloat((Math.random() * 10 + 5).toFixed(2)),
+          },
+        },
+      },
+    });
+
+    console.log(`Created medicine: ${createdMedicine.name}`);
   }
 }
 
 main()
-  .then(async () => {
-    await prisma.$disconnect();
-  })
-  .catch(async (e) => {
-    console.error(e);
-    await prisma.$disconnect();
+  .catch((e) => {
+    console.error("Seeding failed:", e);
     process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
   });

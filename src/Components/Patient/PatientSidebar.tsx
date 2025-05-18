@@ -11,19 +11,23 @@ import {
     Menu,
   User2,
   X,
+  VideoIcon,
+  
 } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils'; 
 // import { Button } from '../ui/button';
 
 const navItems = [
-  { name: 'Dashboard', icon: Home, path: '/dashboard' },
+  { name: 'Dashboard', icon: Home, path: '/patient/dashboard' },
   { name: 'Doctors', icon: Users, path: '/patient/doctors' },
-  { name: 'Appointments', icon: Calendar, path: '/appointments' },
+  { name: 'Appointments', icon: Calendar, path: '/patient/appointments' },
   { name: 'Medical Records', icon: ClipboardList, path: '/records' },
+  {name : 'Video Call',icon: VideoIcon,path:'/patient/videocall'},
   { name: 'Ai SymtomGenerate', icon: Settings, path: '/patient/symptomchecker' },
-  { name: 'Pharmacy', icon: Pill, path: '/patient/symptomchecker' },
-  { name: 'Profile', icon: User2, path: '/patient/symptomchecker' },
+  { name: 'Pharmacy', icon: Pill, path: '/patient/pharmacy' },
+  { name: 'Profile', icon: User2, path: '/patient/profile' },
+
 ];
 
 const PatientSidebar = () => {

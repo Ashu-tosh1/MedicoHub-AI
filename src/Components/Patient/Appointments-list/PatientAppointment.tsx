@@ -1,5 +1,4 @@
 'use client';
-
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@clerk/nextjs';
@@ -101,9 +100,9 @@ export default function PatientAppointments() {
                   <strong>Status:</strong>{' '}
                   <span
                     className={`font-medium ${
-                      appt.status === 'Confirmed'
+                      appt.status === 'CONFIRMED'
                         ? 'text-green-500'
-                        : appt.status === 'Pending'
+                        : appt.status === 'PENDING'
                         ? 'text-yellow-500'
                         : 'text-red-500'
                     }`}
@@ -111,7 +110,7 @@ export default function PatientAppointments() {
                     {appt.status}
                   </span>
                 </p>
-                    {appt.status === 'Confirmed' ? (
+                    {appt.status === 'CONFIRMED' ? (
                         <button
                             onClick={() => router.push(`/patient/consulation/${appt.id}`)}
                             className="mt-4 w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-300">

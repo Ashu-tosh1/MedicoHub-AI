@@ -1,11 +1,10 @@
 "use client"
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Calendar, Clock, User, Bell, ChevronRight } from 'lucide-react';
+import { Calendar, Clock, User,  ChevronRight } from 'lucide-react';
 import PatientSidebar from '../PatientSidebar';
-// import { appointment} from '../mock/MockData';
-// import { Prescriptions } from '../mock/MockData';
 import { appointment, Prescriptions, report } from '@/lib/mockData';
+import Link from 'next/link';
 
 export default function PatientDashboard() {
 
@@ -119,10 +118,7 @@ export default function PatientDashboard() {
     <div className="flex h-screen bg-gray-50">
       {/* Sidebar */}
       <div className="w-64 bg-white shadow-lg relative">
-        <div className="p-4">
-          <h1 className="text-2xl font-bold text-blue-600">MediCare</h1>
-          <p className="text-gray-500 text-sm">Patient Portal</p>
-        </div>
+       
     
         <PatientSidebar />
     
@@ -147,15 +143,18 @@ export default function PatientDashboard() {
             <h2 className="text-xl font-semibold text-gray-800">Dashboard</h2>
             <div className="flex items-center space-x-4">
               <motion.div whileHover={{ scale: 1.05 }} className="relative">
-                <Bell className="h-6 w-6 text-gray-500" />
-                <span className="absolute top-0 right-0 h-2 w-2 bg-red-500 rounded-full" />
+               
               </motion.div>
+              <Link href={'/patient/doctors'} >
               <motion.button
+                
                 whileHover={{ scale: 1.05 }}
                 className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
               >
                 Book Appointment
               </motion.button>
+              </Link>
+              
             </div>
           </div>
         </header>
@@ -170,17 +169,21 @@ export default function PatientDashboard() {
           >
             <h2 className="text-2xl font-bold">Welcome back, {patientName.split(' ')[0] || 'Patient'}!</h2>
             {nextAppointment ? (
-              <p className="mt-1">Your next appointment is on {nextAppointment.date} with Dr. {nextAppointment.doctor}.</p>
+              <p className="mt-1">Your next appointment is on {nextAppointment.date} with  {nextAppointment.doctor}.</p>
             ) : (
               <p className="mt-1">You have no upcoming appointments.</p>
             )}
             {nextAppointment && (
+              <Link href={`/patient/appointments`} >
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 className="mt-4 px-4 py-2 bg-white text-blue-600 rounded-lg font-medium flex items-center"
               >
                 View Details <ChevronRight className="ml-1 h-4 w-4" />
               </motion.button>
+             
+             
+              </Link>
             )}
           </motion.div>    
           
@@ -257,11 +260,7 @@ export default function PatientDashboard() {
                           {report.status}
                         </span>
                       </div>
-                      {report.status === 'Ready' && (
-                        <button className="mt-2 text-sm text-blue-500 hover:text-blue-700 flex items-center">
-                          View Report <ChevronRight className="ml-1 h-4 w-4" />
-                        </button>
-                      )}
+                      
                     </motion.div>
                   ))}
                 </div>
