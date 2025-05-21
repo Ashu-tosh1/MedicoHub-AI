@@ -16,7 +16,7 @@ interface CallInfo {
   displayName: string;
 }
 
-export default function VideoCall() {
+export default function VideoJoin() {
   const searchParams = useSearchParams();
   const appointmentId = searchParams.get('appointmentId');
 
@@ -112,7 +112,7 @@ export default function VideoCall() {
     };
 
     initCall();
-  }, [appointmentId, user]);
+  }, [appointmentId, user, router]);
 
   if (loading) {
     return (
