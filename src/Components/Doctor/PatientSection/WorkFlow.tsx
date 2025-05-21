@@ -127,14 +127,16 @@ const ConsultationWorkflow: React.FC<ConsultationWorkflowProps> = ({
   const fetchMedicalReport = async (appointmentId: string) => {
     try {
       setIsLoadingReport(true);
-      const res = await fetch('/api/tests/results/[id]', {
+      const res = await fetch('/api/tests/results', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ appointmentId: appointmentId }),
       });
+      
       const data = await res.json();
+      
       // const data = await response.json();
       
       if (data.error) {
@@ -326,12 +328,12 @@ const ConsultationWorkflow: React.FC<ConsultationWorkflowProps> = ({
 
   const updateReportStatus = async (reportId: string, status: string) => {
     try {
-      const response = await fetch(`/api/tests/results/${reportId}`, {
+      const response = await fetch(`/api/tests/results/report`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ status }),
+        body: JSON.stringify({ reportId: reportId,status: status }),
       });
       
       if (!response.ok) {

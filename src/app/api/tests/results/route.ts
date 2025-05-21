@@ -1,52 +1,9 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient, ReportStatus } from '@prisma/client';
+import { PrismaClient} from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-export async function POST(
-  request: Request,
-  { params }: { params: { id?: string } }
-) {
-  // If params.id is present, treat this POST as the update (was PUT)
-  if (params?.id) {
-    try {
-      const reportId = params.id;
-
-      if (!reportId) {
-        return NextResponse.json(
-          { error: 'Report ID is required' },
-          { status: 400 }
-        );
-      }
-
-      const data = await request.json();
-      const { status } = data;
-
-      const updatedReport = await prisma.medicalReport.update({
-        where: {
-          id: reportId,
-        },
-        data: {
-          status: status as ReportStatus,
-        },
-      });
-
-      return NextResponse.json({
-        success: true,
-        report: updatedReport,
-      });
-    } catch (error) {
-      console.error('Error updating medical report:', error);
-      return NextResponse.json(
-        { error: 'Failed to update medical report' },
-        { status: 500 }
-      );
-    } finally {
-      await prisma.$disconnect();
-    }
-  }
-
-  // If no id param, treat POST as the fetch by appointmentId (old POST logic)
+export async function POST(request: Request) {
   try {
     const body = await request.json();
     const { appointmentId } = body;
@@ -58,24 +15,14 @@ export async function POST(
       );
     }
 
-    // First, get the appointment details to find the patient and doctor
+    // Fetch appointment details
     const appointment = await prisma.appointment.findUnique({
-      where: {
-        id: appointmentId,
-      },
+      where: { id: appointmentId },
       select: {
         patientId: true,
         doctorId: true,
-        patient: {
-          select: {
-            name: true,
-          },
-        },
-        doctor: {
-          select: {
-            name: true,
-          },
-        },
+        patient: { select: { name: true } },
+        doctor: { select: { name: true } },
       },
     });
 
@@ -86,18 +33,14 @@ export async function POST(
       );
     }
 
-    // Find the most recent medical report for this patient from this doctor
+    // Most recent report
     const report = await prisma.medicalReport.findFirst({
       where: {
         patientId: appointment.patientId,
         doctorId: appointment.doctorId,
       },
-      include: {
-        testRequest: true,
-      },
-      orderBy: {
-        date: 'desc',
-      },
+      include: { testRequest: true },
+      orderBy: { date: 'desc' },
     });
 
     if (!report) {
@@ -107,42 +50,31 @@ export async function POST(
       );
     }
 
-    // Find related reports for the same patient from the same doctor
+    // Related reports in last 30 days (excluding current)
     const relatedReports = await prisma.medicalReport.findMany({
       where: {
         patientId: appointment.patientId,
         doctorId: appointment.doctorId,
-        id: {
-          not: report.id,
-        },
-        date: {
-          gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
-        },
+        id: { not: report.id },
+        date: { gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) },
       },
-      include: {
-        testRequest: true,
-      },
-      orderBy: {
-        date: 'desc',
-      },
+      include: { testRequest: true },
+      orderBy: { date: 'desc' },
       take: 5,
     });
 
-    // Find test requests that have been requested but don't have reports yet
+    // Pending test requests
     const pendingTestRequests = await prisma.testRequest.findMany({
       where: {
         patientId: appointment.patientId,
         requestedBy: appointment.doctorId,
         resultId: null,
-        status: {
-          in: ['REQUESTED', 'PENDING'],
-        },
+        status: { in: ['REQUESTED', 'PENDING'] },
       },
-      orderBy: {
-        requestDate: 'desc',
-      },
+      orderBy: { requestDate: 'desc' },
     });
 
+    // Format response
     const formattedReport = report
       ? {
           id: report.id,
@@ -160,8 +92,7 @@ export async function POST(
             ? {
                 id: report.testRequest.id,
                 testName: report.testRequest.testName,
-                description:
-                  report.testRequest.description || 'No description available',
+                description: report.testRequest.description || 'No description available',
               }
             : null,
         }
@@ -178,8 +109,7 @@ export async function POST(
         ? {
             id: relReport.testRequest.id,
             testName: relReport.testRequest.testName,
-            description:
-              relReport.testRequest.description || 'No description available',
+            description: relReport.testRequest.description || 'No description available',
           }
         : null,
     }));
@@ -204,9 +134,9 @@ export async function POST(
       pendingTests: formattedPendingTests,
     });
   } catch (error) {
-    console.error('Error fetching medical reports:', error);
+    console.error('Error processing request:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch medical reports' },
+      { error: 'Failed to process request' },
       { status: 500 }
     );
   } finally {
