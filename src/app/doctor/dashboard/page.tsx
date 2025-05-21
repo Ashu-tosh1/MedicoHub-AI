@@ -5,7 +5,7 @@ import DoctorDashboard from '@/Components/Doctor/DoctorDashboard/DoctorDashboard
 import { requireDoctorAuth } from '@/lib/doctorauth';
 
 
-await requireDoctorAuth()
+
 // Define TypeScript interfaces
 interface Patient {
   id: string;
@@ -75,6 +75,7 @@ interface DoctorWithStats extends Omit<Doctor, 'availability'> {
 }
 
 export default async function DoctorDashboardPage() {
+  await requireDoctorAuth()
   const { userId } = await auth();
 
   if (!userId) {
