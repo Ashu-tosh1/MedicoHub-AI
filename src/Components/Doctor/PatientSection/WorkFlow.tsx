@@ -327,7 +327,7 @@ const ConsultationWorkflow: React.FC<ConsultationWorkflowProps> = ({
   const updateReportStatus = async (reportId: string, status: string) => {
     try {
       const response = await fetch(`/api/tests/results/${reportId}`, {
-        method: 'PUT',
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },

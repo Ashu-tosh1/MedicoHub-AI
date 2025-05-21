@@ -1,11 +1,52 @@
-// /api/tests/results/[id].ts
 import { NextResponse } from 'next/server';
 import { PrismaClient, ReportStatus } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-// POST handler (replaces GET)
-export async function POST(request: Request) {
+export async function POST(
+  request: Request,
+  { params }: { params: { id?: string } }
+) {
+  // If params.id is present, treat this POST as the update (was PUT)
+  if (params?.id) {
+    try {
+      const reportId = params.id;
+
+      if (!reportId) {
+        return NextResponse.json(
+          { error: 'Report ID is required' },
+          { status: 400 }
+        );
+      }
+
+      const data = await request.json();
+      const { status } = data;
+
+      const updatedReport = await prisma.medicalReport.update({
+        where: {
+          id: reportId,
+        },
+        data: {
+          status: status as ReportStatus,
+        },
+      });
+
+      return NextResponse.json({
+        success: true,
+        report: updatedReport,
+      });
+    } catch (error) {
+      console.error('Error updating medical report:', error);
+      return NextResponse.json(
+        { error: 'Failed to update medical report' },
+        { status: 500 }
+      );
+    } finally {
+      await prisma.$disconnect();
+    }
+  }
+
+  // If no id param, treat POST as the fetch by appointmentId (old POST logic)
   try {
     const body = await request.json();
     const { appointmentId } = body;
@@ -166,48 +207,6 @@ export async function POST(request: Request) {
     console.error('Error fetching medical reports:', error);
     return NextResponse.json(
       { error: 'Failed to fetch medical reports' },
-      { status: 500 }
-    );
-  } finally {
-    await prisma.$disconnect();
-  }
-}
-
-// PUT request stays the same
-export async function PUT(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
-  try {
-    const reportId = params.id;
-
-    if (!reportId) {
-      return NextResponse.json(
-        { error: 'Report ID is required' },
-        { status: 400 }
-      );
-    }
-
-    const data = await request.json();
-    const { status } = data;
-
-    const updatedReport = await prisma.medicalReport.update({
-      where: {
-        id: reportId,
-      },
-      data: {
-        status: status as ReportStatus,
-      },
-    });
-
-    return NextResponse.json({
-      success: true,
-      report: updatedReport,
-    });
-  } catch (error) {
-    console.error('Error updating medical report:', error);
-    return NextResponse.json(
-      { error: 'Failed to update medical report' },
       { status: 500 }
     );
   } finally {
