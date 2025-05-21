@@ -1,8 +1,9 @@
 import { notFound } from 'next/navigation';
 import { auth } from '@clerk/nextjs/server';
-import prisma from '@/lib/prisma';
+// import prisma from '@/lib/prisma';
 import DoctorDashboard from '@/Components/Doctor/DoctorDashboard/DoctorDashboard';
 import { requireDoctorAuth } from '@/lib/doctorauth';
+import { prisma } from '@/lib/prisma';
 
 
 
