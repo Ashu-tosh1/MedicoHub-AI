@@ -9,7 +9,7 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const appointmentId = params.id;
+    const appointmentId =await params.id;
     
     if (!appointmentId) {
       return NextResponse.json(

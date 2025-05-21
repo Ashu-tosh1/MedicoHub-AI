@@ -114,3 +114,31 @@ step-17 patient profile
 step-18 medial history
 ![alt text](image-29.png)
 ![alt text](image-30.png)
+
+
+
+export default function handler(req, res) {
+  const { id } = req.query;
+
+  if (req.method === 'GET') {
+      res.status(200).json({ id, message: 'Author data fetched successfully' });
+  } else if (req.method === 'POST') {
+      res.status(200).json({ id, message: 'Author data sent successfully' });
+  } else if (req.method === 'PUT') {
+      res.status(200).json({ id, message: 'Author data updated successfully' });
+  } else if (req.method === 'DELETE') {
+      res.status(200).json({ id, message: 'Author data deleted successfully' });
+  }
+}
+
+// app/api/[id]/route.js
+import { NextResponse } from 'next/server';
+
+export async function GET(request, { params }) {
+  const { id } = params;
+
+  // Fetch data based on the 'id'
+  const data = { id: id, message: `Details for item ${id}` };
+
+  return NextResponse.json(data);
+}

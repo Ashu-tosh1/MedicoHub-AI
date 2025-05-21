@@ -6,13 +6,11 @@ import {
   BarChart3,
   CalendarClock,
   Users,
-  // FileText,
-  // Activity,
-  // Settings,
   Menu,
   X,
   Video,
 } from 'lucide-react';
+import { SignOutButton } from '@clerk/nextjs';
 
 interface Doctor {
   name: string;
@@ -113,6 +111,7 @@ export default function SidebarContent() {
             {/* <NavItem icon={<Activity />} text="Analytics" route="/doctor/analytics" expanded={sidebarOpen} />
             <NavItem icon={<Settings />} text="Settings" route="/doctor/settings" expanded={sidebarOpen} /> */}
           </nav>
+          <SignOutButton/>
         </div>
       </div>
     </div>

@@ -1,8 +1,12 @@
 import Navbar from '@/Components/Homepage/Navbar'
 import PatientDashboard from '@/Components/Patient/Dashboard/Dashboard'
+import { requireAuth } from '@/lib/auth';
+// import { requireAuth } from '@clerk/clerk-sdk-node';
 import React from 'react'
 
-const page = () => {
+const page = async () => {
+  await requireAuth();
+  // await re
   return (
     <div>
      

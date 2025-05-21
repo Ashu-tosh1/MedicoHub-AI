@@ -103,6 +103,7 @@ export default function AuthPage() {
             </div>
 
             <div>
+              <h2>Password must be of length 8</h2>
               <Label htmlFor="password" className="text-gray-700">Password</Label>
               <Input
                 type="password"

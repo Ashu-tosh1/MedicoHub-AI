@@ -40,22 +40,6 @@ export async function POST(request: Request) {
       );
     }
 
-    // Create order in your database
-    // Note: Since there's no Order model in your schema, 
-    // this is a placeholder for your actual order creation logic
-    // You might want to add an Order model to your schema
-    
-    // For now, let's assume we're updating the patient with the order details
-    // In a real application, you'd create a proper order record
-    // const updatedPatient = await prisma.patient.update({
-    //   where: { id: patient.id },
-    //   data: {
-    //     // Store order details in a way that makes sense for your application
-    //     // This is just a placeholder
-    //     address: address,
-    //     phoneNumber: phoneNumber,
-    //   },
-    // });
 
     // Update inventory (decrease quantity)
     for (const item of items) {

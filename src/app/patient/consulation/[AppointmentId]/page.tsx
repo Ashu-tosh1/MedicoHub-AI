@@ -1,8 +1,11 @@
 import Navbar from '@/Components/Homepage/Navbar'
 import AppointmentDetails from '@/Components/Patient/Workflow/WorkFlow'
+import { requireAuth } from '@/lib/auth';
+// import { requireAuth } from '@clerk/clerk-sdk-node';
 import React from 'react'
 
-const page = () => {
+const page = async () => {
+  await requireAuth();
   return (
     <div>
      

@@ -115,7 +115,7 @@ const Appointments = () => {
           <div className="bg-white p-4 rounded-xl shadow-sm mb-6">
             <h2 className="text-lg font-semibold mb-4 text-gray-800 flex items-center">
               <Calendar className="mr-2 h-5 w-5 text-blue-600" />
-        Upcoming Schedule
+        Your appointments
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {filteredAppointments.slice(0, 3).map((appointment) => (

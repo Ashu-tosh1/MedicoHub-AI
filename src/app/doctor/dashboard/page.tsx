@@ -2,7 +2,10 @@ import { notFound } from 'next/navigation';
 import { auth } from '@clerk/nextjs/server';
 import prisma from '@/lib/prisma';
 import DoctorDashboard from '@/Components/Doctor/DoctorDashboard/DoctorDashboard';
+import { requireDoctorAuth } from '@/lib/doctorauth';
 
+
+await requireDoctorAuth()
 // Define TypeScript interfaces
 interface Patient {
   id: string;

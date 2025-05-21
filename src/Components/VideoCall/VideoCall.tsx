@@ -1,70 +1,71 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Calendar, Clock, Phone, Video } from 'lucide-react';
-import { formatAppointmentTime, groupAppointmentsByDate } from '@/lib/utils';
 import { useUser } from '@clerk/nextjs';
 import PatientSidebar from '../Patient/PatientSidebar';
 import SidebarContent from '../Doctor/DoctorSidebar/DoctorSidebar';
 
+const formatAppointmentTime = (time: string) => {
+  const [hour, minute] = time.split(':');
+  const date = new Date();
+  date.setHours(Number(hour), Number(minute));
+  return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+};
 
+const groupAppointmentsByDate = (appointments: any[]) => {
+  return appointments.reduce((acc: any, appt) => {
+    const dateKey = new Date(appt.date).toLocaleDateString();
+    acc[dateKey] = acc[dateKey] || [];
+    acc[dateKey].push(appt);
+    return acc;
+  }, {});
+};
 
-// Types
-interface Doctor {
-  name: string;
-  department: string;
-}
-
-interface Patient {
-  name: string;
-}
-
-interface Appointment {
-  id: string;
-  date: string;
-  time: string;
-  type: string;
-  status: string;
-  doctor?: Doctor;
-  patient?: Patient;
-}
+const isPastAppointment = (date: Date, time: string) => {
+  const [hour, minute] = time.split(':').map(Number);
+  const apptDateTime = new Date(date);
+  apptDateTime.setHours(hour, minute, 0, 0);
+  return new Date() > apptDateTime;
+};
 
 const VideoCalls = () => {
   const router = useRouter();
-  const [appointments, setAppointments] = useState<Appointment[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const { user } = useUser();
+  const [appointments, setAppointments] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [userRole, setUserRole] = useState<string | null>(null);
-  const { user } = useUser();
 
   useEffect(() => {
     const fetchAppointments = async () => {
       if (!user) return;
 
       try {
-        const userId = user.id;
         const response = await fetch('/api/videocall/appointments', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ userId }),
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId: user.id }),
         });
 
-        if (!response.ok) {
-          throw new Error('Failed to fetch appointments');
-        }
-
         const data = await response.json();
-        setAppointments(data.appointments);
-        console.log(data)
-        if (data.appointments.length > 0) {
-          setUserRole(data.appointments[0].doctor ? 'PATIENT' : 'DOCTOR');
+
+        if (!response.ok) throw new Error(data.error || 'Failed to fetch appointments');
+
+        const appointments = data.appointments.map((a: any) => ({
+          ...a,
+          date: new Date(a.date),
+        }));
+
+        setAppointments(appointments);
+
+        if (appointments.length > 0) {
+          setUserRole(appointments[0].doctor ? 'PATIENT' : 'DOCTOR');
         }
-      } catch (err) {
-        console.error('Fetch error:', err);
-        setError('Error loading appointments. Please try again later.');
+      } catch (err: any) {
+        setError(err.message);
       } finally {
         setIsLoading(false);
       }
@@ -73,151 +74,106 @@ const VideoCalls = () => {
     fetchAppointments();
   }, [user]);
 
-  const handleJoinCall = (appointmentId: string) => {
-    router.push(`/videocalls/?appointmentId=${appointmentId}`);
-  };
-
   const groupedAppointments = groupAppointmentsByDate(appointments);
-  const dateKeys = Object.keys(groupedAppointments).sort((a, b) =>
-    new Date(a).getTime() - new Date(b).getTime()
+  const dateKeys = Object.keys(groupedAppointments).sort(
+    (a, b) => new Date(a).getTime() - new Date(b).getTime()
   );
 
-  if (isLoading) {
-    return (
-      <div className="flex h-screen items-center justify-center">
-        <div className="text-center">
-          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-e-transparent align-[-0.125em] text-primary"></div>
-          <p className="mt-2 text-gray-700">Loading appointments...</p>
-        </div>
-      </div>
-    );
-  }
+  const handleJoinCall = (id: string) => {
+    router.push(`/videocalls/?appointmentId=${id}`);
+  };
 
-  if (error) {
-    return (
-      <div className="flex h-screen items-center justify-center">
-        <div className="text-center">
-          <div className="inline-flex items-center justify-center flex-shrink-0 w-12 h-12 rounded-full bg-red-100 text-red-500">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-          </div>
-          <h3 className="mt-2 text-lg font-medium text-gray-900">Error</h3>
-          <p className="mt-1 text-sm text-gray-500">{error}</p>
-        </div>
-      </div>
-    );
-  }
+  if (isLoading) return <div className="text-center p-10">Loading...</div>;
+  if (error) return <div className="text-red-600 text-center p-10">{error}</div>;
 
-  if (appointments.length === 0) {
-    return (
-      <div className="flex min-h-screen">
-        {userRole === 'PATIENT' && (
-          <div className="w-64 bg-gray-100 p-4 border-r">
-            {/* <PatientSidebar /> */}
-                    <div className="text-gray-600 font-semibold">
-                        <PatientSidebar/>
-                    </div>
-          </div>
-        )}
-        {userRole === 'DOCTOR' && (
-          <div className="w-64 bg-gray-100 p-4 border-r">
-            {/* <DoctorSidebar /> */}
-            {/* <SidebarContent /> */}
-            {/* <h1>Hey </h1> */}
-            <div className="text-gray-600 font-semibold"><SidebarContent/></div>
-          </div>
-        )}
-        <div className="flex-1 container mx-auto px-4 py-8">
-          <h1 className="text-2xl font-bold mb-8">Video Consultations</h1>
-          <div className="bg-white rounded-lg shadow-md p-6 text-center">
-            <Video className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-            <h2 className="text-xl font-semibold text-gray-700 mb-2">No upcoming video consultations</h2>
-            <p className="text-gray-500">
-              {userRole === 'PATIENT'
-                ? "You don't have any confirmed appointments scheduled for video consultation."
-                : "You don't have any confirmed appointments with patients for video consultation."}
-            </p>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const today = new Date().toLocaleDateString(undefined, {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
 
   return (
-    <div className="flex ">
-      {userRole === 'PATIENT' && (
-        <div className="w-64 h-[500px] bg-gray-100 p-4 border-r">
-          {/* <PatientSidebar /> */}
-                  <div className="text-gray-600 font-semibold">
-                      <PatientSidebar/>
-          </div>
-        </div>
-      )}
-      {userRole === 'DOCTOR' && (
-        
-        <div  >
-           <SidebarContent/> 
-        </div>
-      )}
+    <div className="flex">
+      <div className="w-64 bg-gray-100 p-4 border-r">
+        {userRole === 'PATIENT' ? <PatientSidebar /> : <SidebarContent />}
+      </div>
+
       <div className="flex-1 container mx-auto px-4 py-8">
-        <div className="flex justify-between items-center mb-8">
+        {/* Header with title and today's date */}
+        <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold">Video Consultations</h1>
-          <div className="flex items-center space-x-2 bg-blue-50 text-blue-700 px-3 py-1 rounded-full">
-            <Video className="h-4 w-4" />
-            <span className="text-sm font-medium">{appointments.length} Upcoming</span>
-          </div>
+          <div className="text-sm text-gray-500">{today}</div>
         </div>
 
-        {dateKeys.map((dateKey) => (
-          <div key={dateKey} className="mb-8">
-            <div className="flex items-center mb-4">
-              <Calendar className="h-5 w-5 text-blue-600 mr-2" />
-              <h2 className="text-lg font-semibold text-gray-800">{dateKey}</h2>
-            </div>
+        {appointments.length === 0 ? (
+          <div className="bg-white p-6 text-center rounded-lg shadow">
+            <Video className="w-10 h-10 mx-auto text-gray-400" />
+            <p className="text-lg mt-4">
+              {userRole === 'PATIENT'
+                ? 'You have no upcoming video appointments.'
+                : 'No scheduled video calls with patients.'}
+            </p>
+          </div>
+        ) : (
+          dateKeys.map((date) => (
+            <div key={date} className="mb-8">
+              <div className="flex items-center mb-4">
+                <Calendar className="h-5 w-5 text-blue-600 mr-2" />
+                <h2 className="text-lg font-semibold text-gray-800">{date}</h2>
+              </div>
 
-            <div className="space-y-4">
-              {groupedAppointments[dateKey].map((appointment: Appointment) => (
-                <div key={appointment.id} className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-100 hover:shadow-lg transition-shadow duration-300">
-                  <div className="p-5">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <div className="flex items-center text-gray-500 mb-2">
-                          <Clock className="h-4 w-4 mr-1" />
-                          <span>{formatAppointmentTime(appointment.time)}</span>
-                        </div>
+              <div className="space-y-4">
+                {groupedAppointments[date].map((appt: any) => {
+                  const isPast = isPastAppointment(appt.date, appt.time);
 
-                        <h3 className="text-lg font-semibold mb-1">
-                          {userRole === 'PATIENT'
-                            ? `Dr. ${appointment.doctor?.name}`
-                            : `Patient: ${appointment.patient?.name}`}
-                        </h3>
-
-                        {userRole === 'PATIENT' && (
-                          <p className="text-gray-600 text-sm">{appointment.doctor?.department}</p>
-                        )}
-
-                        <div className="mt-2">
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                            {appointment.type}
+                  return (
+                    <div
+                      key={appt.id}
+                      className="p-5 bg-white rounded-lg shadow hover:shadow-md transition"
+                    >
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <p className="text-sm text-gray-500 flex items-center">
+                            <Clock className="h-4 w-4 mr-1" />
+                            {formatAppointmentTime(appt.time)}
+                          </p>
+                          <h3 className="text-lg font-semibold mt-1">
+                            {userRole === 'PATIENT'
+                              ? `Dr. ${appt.doctor?.name}`
+                              : `Patient: ${appt.patient?.name}`}
+                          </h3>
+                          {appt.doctor?.department && (
+                            <p className="text-sm text-gray-600">{appt.doctor.department}</p>
+                          )}
+                          <span
+                            className={`mt-2 inline-block text-xs px-2 py-1 rounded-full ${
+                              isPast
+                                ? 'bg-gray-200 text-gray-600'
+                                : 'bg-blue-100 text-blue-700'
+                            }`}
+                          >
+                            {isPast ? 'Past Call' : appt.type}
                           </span>
                         </div>
-                      </div>
 
-                      <button
-                        onClick={() => handleJoinCall(appointment.id)}
-                        className="flex items-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors duration-300"
-                      >
-                        <Phone className="h-4 w-4 mr-2" />
-                        Join Call
-                      </button>
+                        {!isPast && (
+                          <button
+                            onClick={() => handleJoinCall(appt.id)}
+                            className="flex items-center bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md"
+                          >
+                            <Phone className="h-4 w-4 mr-2" />
+                            Join Call
+                          </button>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                </div>
-              ))}
+                  );
+                })}
+              </div>
             </div>
-          </div>
-        ))}
+          ))
+        )}
       </div>
     </div>
   );

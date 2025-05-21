@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "@clerk/clerk-sdk-node": "^4.13.23",
-    "@clerk/nextjs": "^6.19.2",
+    "@clerk/nextjs": "^6.19.5",
     "@daily-co/daily-js": "^0.79.0",
     "@faker-js/faker": "^9.7.0",
     "@google/generative-ai": "^0.24.1",

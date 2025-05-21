@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
-import { ChevronRight,  User, MapPin, Calendar, Stethoscope } from 'lucide-react'
-import React, { useState, useEffect } from 'react'
+import { ChevronRight, User, MapPin, Calendar, Stethoscope } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
 
 interface Step1Props {
   nextStep: () => void;
@@ -25,13 +25,10 @@ const Step1_Medical: React.FC<Step1Props> = ({ nextStep, appointmentId }) => {
       try {
         setIsLoading(true);
         const response = await fetch(`/api/appointments/patient/${appointmentId}`);
+        if (!response.ok) throw new Error("Failed to fetch appointment data");
 
-        if (!response.ok) {
-          throw new Error("Failed to fetch appointment data");
-        }
-
-          const data = await response.json();
-          console.log(data)
+        const data = await response.json();
+        console.log(data);
         setAppointment(data);
       } catch (err) {
         setError("Error fetching appointment details. Using mock data instead.");
@@ -67,59 +64,62 @@ const Step1_Medical: React.FC<Step1Props> = ({ nextStep, appointmentId }) => {
   }
 
   return (
-    <div className="text-center">
-    <div className="mb-6">
-      <div className="bg-blue-100 rounded-full p-4 inline-block">
-        <Calendar className="text-blue-600" size={32} />
+    <div className="max-w-3xl mx-auto px-6 py-10 bg-white shadow-2xl rounded-2xl border border-gray-100">
+      <div className="text-center mb-10">
+        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-100">
+          <Calendar className="text-blue-600" size={28} />
+        </div>
+        <h2 className="text-3xl font-bold text-gray-800 mt-4">Your Appointment is Ready</h2>
+        <p className="text-gray-600 mt-2">
+          Please confirm and proceed with your consultation with <span className="font-semibold">{appointment.doctorName}</span>.
+        </p>
       </div>
-      <h2 className="text-2xl font-bold text-gray-800 mt-4 mb-2">Welcome to Your Appointment</h2>
-      <p className="text-gray-600">Please Upload the  following details for your consultation with {appointment.doctorName}</p>
-    </div>
-    
-    <div className="bg-blue-50 p-5 rounded-lg border border-blue-100 mb-6">
-      <div className="grid md:grid-cols-2 gap-4">
-        <div className="flex items-start">
-          <Calendar size={20} className="text-blue-600 mt-1 mr-2" />
+
+      <div className="grid md:grid-cols-2 gap-6 text-left">
+        <div className="bg-gray-50 p-4 rounded-lg shadow-sm flex items-start gap-4">
+          <Calendar size={22} className="text-blue-600 mt-1" />
           <div>
             <p className="text-sm text-gray-500">Date & Time</p>
-            <p className="font-medium text-gray-800">{appointment.appointmentDate} • {appointment.appointmentTime}</p>
+            <p className="text-base font-semibold text-gray-800">{appointment.appointmentDate} • {appointment.appointmentTime}</p>
           </div>
         </div>
-        
-        <div className="flex items-start">
-          <Stethoscope size={20} className="text-blue-600 mt-1 mr-2" />
+
+        <div className="bg-gray-50 p-4 rounded-lg shadow-sm flex items-start gap-4">
+          <Stethoscope size={22} className="text-blue-600 mt-1" />
           <div>
             <p className="text-sm text-gray-500">Doctor</p>
-            <p className="font-medium text-gray-800">{appointment.doctorName}</p>
+            <p className="text-base font-semibold text-gray-800">{appointment.doctorName}</p>
             <p className="text-sm text-gray-500">{appointment.doctorSpecialty}</p>
           </div>
         </div>
-        
-        <div className="flex items-start">
-          <User size={20} className="text-blue-600 mt-1 mr-2" />
+
+        <div className="bg-gray-50 p-4 rounded-lg shadow-sm flex items-start gap-4">
+          <User size={22} className="text-blue-600 mt-1" />
           <div>
             <p className="text-sm text-gray-500">Patient</p>
-            <p className="font-medium text-gray-800">{appointment.patientName}</p>
+            <p className="text-base font-semibold text-gray-800">{appointment.patientName}</p>
           </div>
         </div>
-        
-        <div className="flex items-start">
-          <MapPin size={20} className="text-blue-600 mt-1 mr-2" />
+
+        <div className="bg-gray-50 p-4 rounded-lg shadow-sm flex items-start gap-4">
+          <MapPin size={22} className="text-blue-600 mt-1" />
           <div>
             <p className="text-sm text-gray-500">Location</p>
-            <p className="font-medium text-gray-800">{appointment.location}</p>
+            <p className="text-base font-semibold text-gray-800">{appointment.location}</p>
           </div>
         </div>
       </div>
+
+      <div className="mt-10 text-center">
+        <button
+          onClick={nextStep}
+          className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-xl transition duration-300 inline-flex items-center"
+        >
+          Continue to Symptoms
+          <ChevronRight size={20} className="ml-2" />
+        </button>
+      </div>
     </div>
-    
-    <button 
-      onClick={nextStep}
-      className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition duration-300 flex items-center mx-auto"
-    >
-      Continue to Symptoms <ChevronRight size={18} className="ml-2" />
-    </button>
-  </div>
   );
 };
 

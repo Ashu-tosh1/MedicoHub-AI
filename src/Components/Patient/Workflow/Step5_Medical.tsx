@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { JSXElementConstructor, Key, ReactElement, ReactNode, ReactPortal, useEffect, useState } from "react";
+import { useEffect, useState,  ReactNode, Key } from "react";
 import axios from "axios";
-import { Pill, FileText } from "lucide-react";
+import { Pill, CalendarCheck, UserCheck, MapPin, ClipboardList } from "lucide-react";
+import Link from "next/link";
 
-const Step5 = ({ appointmentId, prevStep }: { appointmentId: string, prevStep: () => void }) => {
+const Step5 = ({ appointmentId, prevStep }: { appointmentId: string; prevStep: () => void }) => {
   const [appointment, setAppointment] = useState<any>(null);
 
   useEffect(() => {
@@ -12,8 +13,8 @@ const Step5 = ({ appointmentId, prevStep }: { appointmentId: string, prevStep: (
 
       try {
         const response = await axios.get(`/api/appointments/${appointmentId}`);
-          setAppointment(response.data);
-          console.log(response)
+        setAppointment(response.data);
+        console.log(response);
       } catch (error) {
         console.error("Error fetching medical details:", error);
       }
@@ -26,34 +27,55 @@ const Step5 = ({ appointmentId, prevStep }: { appointmentId: string, prevStep: (
     return <p className="text-center text-gray-500">Loading appointment details...</p>;
   }
 
-  const renderStep5 = () => {
-    return (
-      <div>
-        {/* Summary Section */}
-        <div className="mb-8 bg-gray-50 p-4 rounded-lg border border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-800 mb-2">Consultation Summary</h3>
-          <p><strong>Date:</strong> {appointment?.appointmentDate}</p>
-          <p><strong>Time:</strong> {appointment?.appointmentTime}</p>
+  return (
+    <div className="max-w-4xl mx-auto px-4 py-6">
+      {/* Header */}
+      <div className="mb-6 text-center">
+        <h2 className="text-3xl font-extrabold text-gray-800">Consultation Summary</h2>
+        <p className="text-gray-500 mt-2">Review your diagnosis, tests, and prescribed medications below.</p>
+      </div>
+
+      {/* Summary Section */}
+      <div className="bg-white shadow-md rounded-xl p-6 mb-8 border border-gray-200 space-y-4">
+        <div className="flex items-center gap-3">
+          <CalendarCheck className="text-blue-600" />
+          <p><strong>Date:</strong> {appointment?.appointmentDate} &nbsp; | &nbsp;<strong>Time:</strong> {appointment?.appointmentTime}</p>
+        </div>
+        <div className="flex items-center gap-3">
+          <UserCheck className="text-green-600" />
           <p><strong>Doctor:</strong> {appointment?.doctorName} ({appointment?.doctorSpecialty})</p>
+        </div>
+        <div className="flex items-center gap-3">
+          <MapPin className="text-purple-600" />
           <p><strong>Location:</strong> {appointment?.location}</p>
-          {/* <p><strong>Symptoms:</strong> {appointment?.symptoms?.join(", ")}</p> */}
+        </div>
+        <div className="flex items-center gap-3">
+          <ClipboardList className="text-gray-600" />
           <p><strong>Notes:</strong> {appointment?.notes}</p>
-          <p><strong>Test Results:</strong> {appointment?.testResults}</p>
+        </div>
+      </div>
+
+      {/* Medications Section */}
+      <div className="mb-10">
+        <div className="flex items-center mb-4">
+          <Pill className="text-emerald-600 mr-2" size={24} />
+          <h2 className="text-2xl font-semibold text-gray-800">Prescribed Medications</h2>
         </div>
 
-        {/* Medications Section */}
-        <div className="mb-8">
-          <div className="flex items-center mb-4">
-            <Pill className="text-blue-600 mr-2" size={24} />
-            <h2 className="text-xl font-bold text-gray-800">Prescribed Medications</h2>
-          </div>
-          
-          <div className="space-y-4">
-            {appointment.medications && appointment.medications.length > 0 ? (
-              appointment.medications.map((med: { name: string | number | bigint | boolean | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Promise<string | number | bigint | boolean | ReactPortal | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | null | undefined> | null | undefined; dosage: string | number | bigint | boolean | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Promise<string | number | bigint | boolean | ReactPortal | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | null | undefined> | null | undefined; instructions: string | number | bigint | boolean | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Promise<string | number | bigint | boolean | ReactPortal | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | null | undefined> | null | undefined; }, index: Key | null | undefined) => (
-                <div key={index} className="bg-white p-4 rounded-lg border-l-4 border-green-500 shadow-sm">
-                  <h4 className="font-bold text-lg text-gray-800">{med.name}</h4>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
+        <div className="space-y-4">
+          {appointment.medications && appointment.medications.length > 0 ? (
+            appointment.medications.map(
+              (
+                med: {
+                  name: ReactNode;
+                  dosage: ReactNode;
+                  instructions: ReactNode;
+                },
+                index: Key
+              ) => (
+                <div key={index} className="bg-white shadow-sm border-l-4 border-green-500 rounded-lg p-5">
+                  <h4 className="font-bold text-lg text-gray-900">{med.name}</h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2">
                     <div>
                       <p className="text-sm text-gray-500">Dosage</p>
                       <p className="font-medium text-gray-700">{med.dosage}</p>
@@ -64,58 +86,58 @@ const Step5 = ({ appointmentId, prevStep }: { appointmentId: string, prevStep: (
                     </div>
                   </div>
                 </div>
-              ))
-            ) : (
-              <div className="text-center py-6 bg-gray-50 rounded-lg border border-gray-200">
-                <div className="mb-3 text-gray-400">
-                  <Pill size={32} className="mx-auto" />
-                </div>
-                <p className="text-gray-600">No medications have been prescribed yet.</p>
-                <p className="text-sm text-gray-500 mt-1">The doctor will review your test results and symptoms before prescribing.</p>
+              )
+            )
+          ) : (
+            <div className="text-center py-6 bg-gray-50 rounded-lg border border-gray-200">
+              <div className="mb-3 text-gray-400">
+                <Pill size={32} className="mx-auto" />
               </div>
-            )}
-          </div>
-        </div>
-        
-        {/* Actions */}
-        <div className="flex flex-wrap gap-3 justify-between mt-6">
-          <button 
-            onClick={prevStep}
-            className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition duration-300"
-          >
-            Back
-          </button>
-          
-          <div className="flex gap-3">
-            <button 
-              onClick={() => window.history.back()}
-              className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition duration-300 flex items-center"
-            >
-              Back to Appointments
-            </button>
-            
-            {appointment.status === "scheduled" && (
-              <button 
-                className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition duration-300"
-              >
-                Cancel Appointment
-              </button>
-            )}
-            
-            {appointment.medications && appointment.medications.length > 0 && (
-              <button 
-                className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition duration-300 flex items-center"
-              >
-                Download Prescription <FileText size={18} className="ml-2" />
-              </button>
-            )}
-          </div>
+              <p className="text-gray-600">No medications have been prescribed yet.</p>
+              <p className="text-sm text-gray-500 mt-1">The doctor may prescribe medication after full analysis.</p>
+            </div>
+          )}
         </div>
       </div>
-    );
-  };
 
-  return renderStep5();
+      {/* Thank You Section */}
+      <div className="bg-gradient-to-r from-blue-50 to-green-50 p-6 rounded-xl border border-gray-200 shadow-sm mb-10 text-center">
+        <h3 className="text-2xl font-bold text-green-700 mb-2">Thank You for Consulting with Us!</h3>
+        <p className="text-gray-700 text-md">
+          We appreciate your trust in MedicoHub. Stay healthy and feel free to revisit us anytime. You can find all your medical history in the Medical History section.
+        </p>
+      </div>
+
+      {/* Actions */}
+      <div className="flex flex-col sm:flex-row justify-between gap-4">
+        <button
+          onClick={prevStep}
+          className="bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition"
+        >
+          Back
+        </button>
+
+        <div className="flex flex-col sm:flex-row gap-3">
+          <Link href={"/patient/appointment"}>
+          
+          <button
+            
+            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition"
+          >
+            Back to Appointments
+          </button>
+          </Link>
+          {appointment.status === "scheduled" && (
+            <button
+              className="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition"
+            >
+              Cancel Appointment
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default Step5;

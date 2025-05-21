@@ -11,6 +11,7 @@ import {
   User2,
   X,
   VideoIcon,
+  History,
 } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
@@ -22,6 +23,7 @@ const navItems = [
   { name: 'Appointments', icon: Calendar, path: '/patient/appointments' },
   { name: 'Video Call', icon: VideoIcon, path: '/patient/videocall' },
   { name: 'Ai SymtomGenerate', icon: Settings, path: '/patient/symptomchecker' },
+  { name: 'Medical History', icon: History, path: '/patient/medicalhistory' },
   { name: 'Pharmacy', icon: Pill, path: '/patient/pharmacy' },
   { name: 'Profile', icon: User2, path: '/patient/profile' },
 ];

@@ -41,6 +41,9 @@ export async function POST(req: Request) {
       username: uniqueUsername,
       emailAddress: [email],
       password,
+      publicMetadata: {
+        role: "patient", 
+      },
     });
 
     console.log("Clerk User Created:", clerkUser);

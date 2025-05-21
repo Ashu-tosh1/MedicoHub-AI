@@ -124,13 +124,7 @@ const PatientSection = () => {
         )}
       </div>
 
-      {/* Optional: Communication Chat */}
-      {/* {isChatOpen && activePatient && (
-        <CommunicationTools
-          activePatient={activePatient}
-          setIsChatOpen={setIsChatOpen}
-        /> */}
-      {/* )} */}
+
     </div>
   );
 };

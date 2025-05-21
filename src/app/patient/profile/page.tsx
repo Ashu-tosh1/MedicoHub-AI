@@ -1,8 +1,11 @@
 import Navbar from '@/Components/Homepage/Navbar'
 import PatientProfile from '@/Components/Patient/PatientProfile/PatientProfile'
+import { requireAuth } from '@/lib/auth';
+
 import React from 'react'
 
-const page = () => {
+const page = async () => {
+  await requireAuth();
   return (
     <div>
      

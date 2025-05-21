@@ -1,8 +1,10 @@
 import Navbar from '@/Components/Homepage/Navbar'
 import VideoCalls from '@/Components/VideoCall/VideoCall'
+import { requireAuth } from '@/lib/auth';
 import React from 'react'
 
-const page = () => {
+const page = async () => {
+  await requireAuth();
   return (
     <div>
      

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react/no-unescaped-entities */
 "use client";
 
@@ -6,28 +7,41 @@ import { useRouter } from "next/navigation";
 import { useSignIn } from "@clerk/nextjs";
 import { Toaster, toast } from "sonner";
 import Image from "next/image";
-import { Label } from "../ui/label";
-import { Input } from "../ui/input";
-import { Button } from "../ui/button";
+import { Input } from "@/Components/ui/input";
+import { Label } from "@/Components/ui/label";
+import { Button } from "@/Components/ui/button";
 
-export default function LoginPage() {
+interface FormData {
+  email: string;
+  password: string;
+}
+
+export default function DoctorLoginPage() {
   const router = useRouter();
   const { signIn, isLoaded, setActive } = useSignIn();
-  const [formData, setFormData] = useState({ email: "", password: "" });
+
+  const [formData, setFormData] = useState<FormData>({
+    email: "",
+    password: "",
+  });
   const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!isLoaded) return;
-    
+
+    if (!isLoaded) {
+      toast.error("Authentication system not loaded");
+      return;
+    }
+
     setIsLoading(true);
 
     try {
-      // First, create the sign-in
       const result = await signIn.create({
         identifier: formData.email,
         password: formData.password,
@@ -36,16 +50,13 @@ export default function LoginPage() {
       if (result.status === "complete") {
         await setActive({ session: result.createdSessionId });
         toast.success("Login successful!");
-        
-        // Immediate redirect (no timeout)
-        setTimeout(() => {
-          router.push("/");
-        }, 1000);
-        router.refresh(); // Force a refresh of the page
+        router.push("/doctor/dashboard");
+      } else {
+        toast.error("Authentication incomplete");
       }
-    } catch (error ) {
-      toast.error(" invalid credintials");
-      console.error(error);
+    } catch (error: any) {
+      console.error("Login error:", error);
+      toast.error(error?.errors?.[0]?.message || "Invalid credentials");
     } finally {
       setIsLoading(false);
     }
@@ -53,12 +64,13 @@ export default function LoginPage() {
 
   return (
     <div className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 overflow-hidden">
-      <Toaster />
+      <Toaster position="top-center" />
 
-      {/* Animated Background Blobs */}
-      <div className="absolute top-0 -left-10 w-[500px] h-[500px] bg-purple-300 rounded-full opacity-30 blur-3xl z-0 animate-pulse"></div>
-      <div className="absolute bottom-0 -right-10 w-[400px] h-[400px] bg-blue-300 rounded-full opacity-30 blur-3xl z-0 animate-pulse"></div>
+      {/* Background blobs */}
+      <div className="absolute top-0 -left-10 w-96 h-96 bg-purple-300 rounded-full opacity-30 blur-3xl z-0 animate-pulse" />
+      <div className="absolute bottom-0 -right-10 w-80 h-80 bg-blue-300 rounded-full opacity-30 blur-3xl z-0 animate-pulse" />
 
+      {/* Main Container */}
       <div className="relative z-10 flex flex-col md:flex-row bg-white/30 backdrop-blur-lg rounded-2xl shadow-xl overflow-hidden max-w-5xl w-full m-4 border border-white/40">
         
         {/* Left Panel */}
@@ -70,22 +82,18 @@ export default function LoginPage() {
             alt="Doctor Illustration"
             className="mb-6 drop-shadow-xl"
           />
-          <h2 className="text-3xl font-semibold mb-2">Welcome Back to MedicoHub</h2>
+          <h2 className="text-3xl font-semibold mb-2">Welcome Doctor</h2>
           <p className="text-sm text-white/80 text-center px-6">
-            Your one-stop platform for All the Medical Services
-          </p>
-          <p className="text-sm text-white/80 text-center px-6">
-           Integerated With AI for your better Health
+            Access your dashboard and start managing patient consultations.
           </p>
         </div>
 
-        {/* Right Panel - Form */}
+        {/* Right Panel - Login Form */}
         <div className="w-full md:w-1/2 p-10 flex flex-col justify-center bg-white/80">
           <div className="text-center mb-8">
             <h1 className="text-4xl font-bold text-indigo-800 drop-shadow">
-              Login
+              Doctor Login
             </h1>
-          
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -95,10 +103,11 @@ export default function LoginPage() {
                 type="email"
                 name="email"
                 id="email"
-                placeholder="john@example.com"
+                placeholder="doctor@example.com"
                 value={formData.email}
                 onChange={handleChange}
                 required
+                className="bg-white"
               />
             </div>
 
@@ -112,8 +121,10 @@ export default function LoginPage() {
                 value={formData.password}
                 onChange={handleChange}
                 required
+                className="bg-white"
               />
-            </div>
+                      </div>
+                      
 
             <Button
               type="submit"
@@ -125,15 +136,12 @@ export default function LoginPage() {
           </form>
 
           <p className="mt-6 text-center text-sm text-gray-600">
-            Don't have an account?{" "}
-            <a href="/register" className="text-indigo-600 hover:text-indigo-800 font-semibold">
-              Register
-            </a>
-          </p>
-          <p className="mt-6 text-center text-sm text-gray-600">
-            Login as as Doctor?{" "}
-            <a href="/doctor/login" className="text-indigo-600 hover:text-indigo-800 font-semibold">
-              Doctor 
+            Not a doctor?{" "}
+            <a
+              href="/sign-in"
+              className="text-indigo-600 hover:text-indigo-800 font-semibold"
+            >
+              Go to Patient Login
             </a>
           </p>
         </div>

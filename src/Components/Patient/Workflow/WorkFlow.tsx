@@ -2,16 +2,16 @@
 "use client"
 import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { Calendar,Stethoscope,User,MapPin,ChevronRight,} from 'lucide-react';
+import { Calendar, Stethoscope, User, MapPin, ChevronRight } from 'lucide-react';
 import Step1_Medical from "./Step1_Medical";
 import Step2_Medical from "./Step2_Medical";
 import Step3TestRecommendation from "./Step3_Medical";
 import TestReportUpload from "./Step4_Medical";
 import Step5 from "./Step5_Medical";
+import PatientSidebar from "../PatientSidebar";
 
 // Define our types
 type AppointmentDetails = {
-  
   id: string;
   patientName: string;
   doctorName: string;
@@ -25,7 +25,7 @@ type AppointmentDetails = {
   testResults?: string;
   medications?: Medication[];
   patientId: string;
-    doctorId: string;
+  doctorId: string;
 };
 
 type TestType = {
@@ -80,8 +80,8 @@ const AppointmentDetails = () => {
           throw new Error("Failed to fetch appointment data");
         }
         
-          const data = await response.json();
-          console.log(data)
+        const data = await response.json();
+        console.log(data)
         setAppointment(data);
       } catch (err) {
         setError("Error fetching appointment details. Using mock data instead.");
@@ -158,8 +158,8 @@ const AppointmentDetails = () => {
   const renderStep1 = () => {
     return (
       <div>
-        <Step1_Medical nextStep={nextStep} appointmentId= {appointmentId} />
-    </div>
+        <Step1_Medical nextStep={nextStep} appointmentId={appointmentId} />
+      </div>
     );
   };
 
@@ -176,8 +176,8 @@ const AppointmentDetails = () => {
   const renderStep3 = () => {
     return (
       <div>
-        <Step3TestRecommendation nextStep={nextStep} prevStep={prevStep} appointment={appointment}/>
-     </div>
+        <Step3TestRecommendation nextStep={nextStep} prevStep={prevStep} appointment={appointment} />
+      </div>
     );
   };
 
@@ -222,59 +222,64 @@ const AppointmentDetails = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 py-8">
-      <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-xl overflow-hidden">
-        {/* Header */}
-        <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-6">
-          <div className="flex items-center mb-4">
-            <Stethoscope size={28} className="mr-2" />
-            <h1 className="text-2xl font-bold">MediConsult</h1>
-          </div>
-          <div className="flex justify-between items-center">
-            <div>
-              <h2 className="text-xl font-semibold">Appointment #{appointment.id}</h2>
-              <div className="mt-1 text-blue-100 flex items-center">
-                <Calendar size={16} className="mr-1" />
-                <span>{appointment.appointmentDate} • {appointment.appointmentTime}</span>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 flex">
+      {/* Sidebar space - you can import your sidebar component here */}
+      <div className="w-64 bg-white shadow-lg">
+        {/* This is where you will import your sidebar component */}
+        <PatientSidebar/>
+      </div>
+      
+      {/* Main content */}
+      <div className="flex-1 py-8 px-4">
+        <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-xl overflow-hidden">
+          {/* Header */}
+          <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-6">
+            <div className="flex justify-between items-center">
+              <div>
+                <h2 className="text-xl font-semibold">Appointment #{appointment.id}</h2>
+                <div className="mt-1 text-blue-100 flex items-center">
+                  <Calendar size={16} className="mr-1" />
+                  <span>{appointment.appointmentDate} • {appointment.appointmentTime}</span>
+                </div>
               </div>
-            </div>
-            <div className="bg-white text-blue-600 px-3 py-1 rounded-full text-sm font-medium">
-              {appointment.status.charAt(0).toUpperCase() + appointment.status.slice(1)}
-            </div>
-          </div>
-        </div>
-        
-        {/* Content */}
-        <div className="p-6">
-          {/* Step indicator */}
-          <div className="mb-6">
-            <div className="flex flex-wrap items-center justify-between mb-2">
-              <div className="flex items-center flex-wrap">
-                <div className={`rounded-full w-8 h-8 flex items-center justify-center ${currentStep >= 0 ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-600'}`}>1</div>
-                <div className={`h-1 w-8 mx-1 ${currentStep >= 1 ? 'bg-blue-600' : 'bg-gray-200'}`}></div>
-                <div className={`rounded-full w-8 h-8 flex items-center justify-center ${currentStep >= 1 ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-600'}`}>2</div>
-                <div className={`h-1 w-8 mx-1 ${currentStep >= 2 ? 'bg-blue-600' : 'bg-gray-200'}`}></div>
-                <div className={`rounded-full w-8 h-8 flex items-center justify-center ${currentStep >= 2 ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-600'}`}>3</div>
-                <div className={`h-1 w-8 mx-1 ${currentStep >= 3 ? 'bg-blue-600' : 'bg-gray-200'}`}></div>
-                <div className={`rounded-full w-8 h-8 flex items-center justify-center ${currentStep >= 3 ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-600'}`}>4</div>
-                <div className={`h-1 w-8 mx-1 ${currentStep >= 4 ? 'bg-blue-600' : 'bg-gray-200'}`}></div>
-                <div className={`rounded-full w-8 h-8 flex items-center justify-center ${currentStep >= 4 ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-600'}`}>5</div>
+              <div className="bg-white text-blue-600 px-3 py-1 rounded-full text-sm font-medium">
+                {appointment.status.charAt(0).toUpperCase() + appointment.status.slice(1)}
               </div>
-              <div className="text-sm text-gray-600 mt-2 md:mt-0">
-                Step {currentStep + 1} of 5
-              </div>
-            </div>
-            <div className="hidden md:flex text-xs text-gray-500 justify-between px-1">
-              <span>Welcome</span>
-              <span>Symptoms</span>
-              <span>Tests</span>
-              <span>Results</span>
-              <span>Medications</span>
             </div>
           </div>
           
-          {/* Render step content */}
-          {renderContent()}
+          {/* Content */}
+          <div className="p-6">
+            {/* Step indicator - fixed alignment */}
+            <div className="mb-6">
+              <div className="flex justify-between items-center mb-4">
+                <div className="flex-1 flex items-center">
+                  <div className={`flex items-center justify-center w-8 h-8 rounded-full ${currentStep >= 0 ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-600'}`}>1</div>
+                  <div className={`flex-1 h-1 mx-2 ${currentStep >= 1 ? 'bg-blue-600' : 'bg-gray-200'}`}></div>
+                  <div className={`flex items-center justify-center w-8 h-8 rounded-full ${currentStep >= 1 ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-600'}`}>2</div>
+                  <div className={`flex-1 h-1 mx-2 ${currentStep >= 2 ? 'bg-blue-600' : 'bg-gray-200'}`}></div>
+                  <div className={`flex items-center justify-center w-8 h-8 rounded-full ${currentStep >= 2 ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-600'}`}>3</div>
+                  <div className={`flex-1 h-1 mx-2 ${currentStep >= 3 ? 'bg-blue-600' : 'bg-gray-200'}`}></div>
+                  <div className={`flex items-center justify-center w-8 h-8 rounded-full ${currentStep >= 3 ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-600'}`}>4</div>
+                  <div className={`flex-1 h-1 mx-2 ${currentStep >= 4 ? 'bg-blue-600' : 'bg-gray-200'}`}></div>
+                  <div className={`flex items-center justify-center w-8 h-8 rounded-full ${currentStep >= 4 ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-600'}`}>5</div>
+                </div>
+                <div className="ml-4 text-sm text-gray-600">
+                  Step {currentStep + 1} of 5
+                </div>
+              </div>
+              <div className="flex justify-between text-xs text-gray-500 px-1">
+                <span>Welcome</span>
+                <span>Symptoms</span>
+                <span>Tests</span>
+                <span>Results</span>
+                <span>Medications</span>
+              </div>
+            </div>
+            
+            {/* Render step content */}
+            {renderContent()}
+          </div>
         </div>
       </div>
     </div>
