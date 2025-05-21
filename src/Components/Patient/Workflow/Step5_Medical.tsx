@@ -12,7 +12,8 @@ const Step5 = ({ appointmentId, prevStep }: { appointmentId: string; prevStep: (
       if (!appointmentId) return;
 
       try {
-        const response = await axios.get(`/api/appointments/${appointmentId}`);
+        const response = await axios.post(`/api/appointments`, { appointmentId });
+
         setAppointment(response.data);
         console.log(response);
       } catch (error) {
