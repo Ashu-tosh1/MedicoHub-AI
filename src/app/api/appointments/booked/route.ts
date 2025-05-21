@@ -1,5 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { PrismaClient } from '@prisma/client';
 import { NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
+
+
+const prisma=new PrismaClient()
 
 export async function GET(request: Request) {
     try {
@@ -23,7 +27,7 @@ export async function GET(request: Request) {
       });
       
   
-      const formatted = appointments.map((appt) => ({
+      const formatted = appointments.map((appt: { id: any; doctor: { name: any; department: any; }; date: any; time: any; status: any; }) => ({
         id: appt.id,
         doctorName: `${appt.doctor.name}`,
         specialization: appt.doctor.department,
