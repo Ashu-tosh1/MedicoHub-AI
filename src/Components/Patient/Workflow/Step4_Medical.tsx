@@ -29,8 +29,15 @@ const TestReportUpload: React.FC<TestReportUploadProps> = ({
       if (!appointment?.id) return;
 
       try {
-        const response = await axios.get(`/api/tests/results/${appointment.id}`);
-        const data = response.data;
+        const res = await fetch('/api/tests/results/[id]', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ appointmentId: appointment.id }),
+        });
+        const data = await res.json();
+        
         console.log("Report data:", data);
 
         if (data?.report?.fileUrl) {

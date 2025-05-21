@@ -74,7 +74,14 @@ const AppointmentDetails = () => {
       try {
         setIsLoading(true);
        
-        const response = await fetch(`/api/appointments/patient/${appointmentId}`);
+        const response = await fetch('/api/appointments/patient', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ appointmentId }),
+        });
+        
         
         if (!response.ok) {
           throw new Error("Failed to fetch appointment data");

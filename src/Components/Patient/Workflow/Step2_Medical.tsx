@@ -26,8 +26,14 @@ const Step2_Medical: React.FC<Step2Props> = ({ nextStep, prevStep }) => {
       if (!appointmentId) return;
 
       try {
-        const response = await axios.get(`/api/appointments/medicalDetails/${appointmentId}`);
-        const data = response.data;
+        const response = await fetch('/api/appointments/appointmentId', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ appointmentId }),
+        });
+        const data = await response.json();
 
         if (data?.symptoms) {
           setSymptoms(data.symptoms.split(",").map((s: string) => s.trim()));

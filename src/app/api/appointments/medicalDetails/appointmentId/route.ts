@@ -1,19 +1,16 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
-export async function GET(
-  req: Request,
-  { params }: { params: { appointmentId: string } }
-) {
+export async function POST(req: Request) {
   try {
-    const appointmentId = await params.appointmentId;
+    const { appointmentId } = await req.json();
 
     if (!appointmentId) {
       return NextResponse.json({ error: "Missing appointment ID" }, { status: 400 });
     }
 
     const medicalDetails = await prisma.appointment.findUnique({
-      where: {id: appointmentId },
+      where: { id: appointmentId },
     });
 
     if (!medicalDetails) {

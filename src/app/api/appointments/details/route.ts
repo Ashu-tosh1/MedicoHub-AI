@@ -1,12 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { appointmentId: string } }
-) {
+export async function POST(req: NextRequest) {
   try {
-    const appointmentId =await params.appointmentId;
+    const { appointmentId } = await req.json();
 
     if (!appointmentId) {
       return NextResponse.json({ error: 'Appointment ID is required' }, { status: 400 });
@@ -35,3 +32,4 @@ export async function GET(
     return NextResponse.json({ error: 'Unable to fetch appointment details' }, { status: 500 });
   }
 }
+

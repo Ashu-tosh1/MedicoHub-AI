@@ -4,20 +4,19 @@ import { PrismaClient, ReportStatus } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-export async function GET(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+// POST handler (replaces GET)
+export async function POST(request: Request) {
   try {
-    const appointmentId =await params.id;
-    
+    const body = await request.json();
+    const { appointmentId } = body;
+
     if (!appointmentId) {
       return NextResponse.json(
         { error: 'Appointment ID is required' },
         { status: 400 }
       );
     }
-    
+
     // First, get the appointment details to find the patient and doctor
     const appointment = await prisma.appointment.findUnique({
       where: {
@@ -38,14 +37,14 @@ export async function GET(
         },
       },
     });
-    
+
     if (!appointment) {
       return NextResponse.json(
         { error: 'Appointment not found' },
         { status: 404 }
       );
     }
-    
+
     // Find the most recent medical report for this patient from this doctor
     const report = await prisma.medicalReport.findFirst({
       where: {
@@ -59,96 +58,100 @@ export async function GET(
         date: 'desc',
       },
     });
-    
+
     if (!report) {
       return NextResponse.json(
         { message: 'No medical reports found for this appointment' },
-        { status: 200 }  // Return 200 with empty data rather than 404
+        { status: 200 }
       );
     }
-    
+
     // Find related reports for the same patient from the same doctor
     const relatedReports = await prisma.medicalReport.findMany({
       where: {
         patientId: appointment.patientId,
         doctorId: appointment.doctorId,
         id: {
-          not: report.id, // Exclude the current report
+          not: report.id,
         },
-        // Only include reports from the last 30 days
         date: {
-          gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
-        }
+          gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
+        },
       },
       include: {
         testRequest: true,
       },
       orderBy: {
-        date: 'desc'
+        date: 'desc',
       },
-      take: 5, // Limit to 5 recent reports
+      take: 5,
     });
-    
+
     // Find test requests that have been requested but don't have reports yet
     const pendingTestRequests = await prisma.testRequest.findMany({
       where: {
         patientId: appointment.patientId,
         requestedBy: appointment.doctorId,
-        resultId: null, // Tests that don't have results yet
+        resultId: null,
         status: {
-          in: ['REQUESTED', 'PENDING']
-        }
+          in: ['REQUESTED', 'PENDING'],
+        },
       },
       orderBy: {
-        requestDate: 'desc'
+        requestDate: 'desc',
       },
     });
-    
-    // Format the current report
-    const formattedReport = report ? {
-      id: report.id,
-      name: report.name,
-      type: report.type,
-      fileUrl: report.fileUrl,
-      results: report.results,
-      date: report.date,
-      status: report.status,
-      patientName: appointment.patient.name,
-      patientId: appointment.patientId,
-      doctorName: appointment.doctor.name,
-      doctorId: appointment.doctorId,
-      testRequest: report.testRequest ? {
-        id: report.testRequest.id,
-        testName: report.testRequest.testName,
-        description: report.testRequest.description || 'No description available'
-      } : null
-    } : null;
-    
-    // Format the related reports
-    const formattedRelatedReports = relatedReports.map(relReport => ({
+
+    const formattedReport = report
+      ? {
+          id: report.id,
+          name: report.name,
+          type: report.type,
+          fileUrl: report.fileUrl,
+          results: report.results,
+          date: report.date,
+          status: report.status,
+          patientName: appointment.patient.name,
+          patientId: appointment.patientId,
+          doctorName: appointment.doctor.name,
+          doctorId: appointment.doctorId,
+          testRequest: report.testRequest
+            ? {
+                id: report.testRequest.id,
+                testName: report.testRequest.testName,
+                description:
+                  report.testRequest.description || 'No description available',
+              }
+            : null,
+        }
+      : null;
+
+    const formattedRelatedReports = relatedReports.map((relReport) => ({
       id: relReport.id,
       name: relReport.name,
       type: relReport.type,
       fileUrl: relReport.fileUrl,
       date: relReport.date,
       status: relReport.status,
-      testRequest: relReport.testRequest ? {
-        id: relReport.testRequest.id,
-        testName: relReport.testRequest.testName,
-        description: relReport.testRequest.description || 'No description available'
-      } : null
+      testRequest: relReport.testRequest
+        ? {
+            id: relReport.testRequest.id,
+            testName: relReport.testRequest.testName,
+            description:
+              relReport.testRequest.description || 'No description available',
+          }
+        : null,
     }));
-    
-    // Format pending test requests
-    const formattedPendingTests = pendingTestRequests.map(test => ({
+
+    const formattedPendingTests = pendingTestRequests.map((test) => ({
       id: test.id,
       testName: test.testName,
       testType: test.testType,
       description: test.description || 'No description available',
       status: test.status,
-      requestDate: test.requestDate
+      requestDate: test.requestDate,
     }));
-    
+
     return NextResponse.json({
       appointmentId,
       patientId: appointment.patientId,
@@ -157,9 +160,8 @@ export async function GET(
       doctorName: appointment.doctor.name,
       report: formattedReport,
       relatedReports: formattedRelatedReports,
-      pendingTests: formattedPendingTests
+      pendingTests: formattedPendingTests,
     });
-    
   } catch (error) {
     console.error('Error fetching medical reports:', error);
     return NextResponse.json(
@@ -171,25 +173,24 @@ export async function GET(
   }
 }
 
-// Add a PUT endpoint to update report status, useful for when viewing PDFs
+// PUT request stays the same
 export async function PUT(
   request: Request,
   { params }: { params: { id: string } }
 ) {
   try {
     const reportId = params.id;
-    
+
     if (!reportId) {
       return NextResponse.json(
         { error: 'Report ID is required' },
         { status: 400 }
       );
     }
-    
+
     const data = await request.json();
     const { status } = data;
-    
-    // Update the report status (e.g., from PROCESSING to VIEWED)
+
     const updatedReport = await prisma.medicalReport.update({
       where: {
         id: reportId,
@@ -198,12 +199,11 @@ export async function PUT(
         status: status as ReportStatus,
       },
     });
-    
+
     return NextResponse.json({
       success: true,
-      report: updatedReport
+      report: updatedReport,
     });
-    
   } catch (error) {
     console.error('Error updating medical report:', error);
     return NextResponse.json(
