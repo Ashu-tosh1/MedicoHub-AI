@@ -35,15 +35,69 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details. -->
 
-# 🏥 MedicoHub – Hospital Management System
+# 🏥 MedicoHubAI – Intelligent Hospital Management System
 
-MedicoHub is a modern full-stack hospital management system designed to streamline medical consultations, doctor-patient interactions, and lab workflows. It enables patients to register, consult doctors, upload medical documents, attend video consultations, receive prescriptions, and track medical history — all from a single platform.
+**MedicoHubAI** is a cutting-edge full-stack hospital management system that leverages modern web technologies and artificial intelligence to deliver a seamless healthcare experience. From registration to consultation, lab integration, prescriptions, and follow-ups, everything is accessible through a secure, responsive interface.
+
+One of its most powerful features is **AI-assisted diagnostics** powered by **Google Gemini** – enabling real-time **symptom analysis**, **disease prediction**, and **urgency detection** to help patients understand their condition and take immediate, informed action.
 
 ---
 
+## 💻 Technologies Used
+
+### Frontend
+- **Next.js** – React-based full-stack framework
+- **Tailwind CSS** – Utility-first CSS framework
+- **React Query** – API data fetching and caching
+- **Jitsi Meet API** – Video call integration
+- **Cloudinary** – Secure media upload and delivery
+
+### Backend
+- **Next.js API Routes** – Fullstack endpoints within the app
+- **Prisma ORM** – Database access and schema management
+- **PostgreSQL** – Relational database
+
+### AI & Intelligence
+- **Gemini AI** – For intelligent symptom interpretation, disease prediction, and urgency-based consultation guidance
+
+### Authentication & Hosting
+- **Clerk** – Authentication and user management
+- **Vercel** – Deployment and hosting
+
+---
+
+## ✅ Features
+
+- 🔐 Secure authentication for Patients and Doctors via Clerk
+- 🧠 **AI-driven Symptom Analysis & Disease Prediction** using **Gemini**  
+  → Users receive:
+  - Predicted diseases based on symptoms  
+  - Suggested urgency levels (e.g., immediate, moderate, low)  
+  - Next steps and direct appointment links  
+- 🧑‍⚕️ Role-based dashboards (Doctor, Patient)
+- 📅 Real-time appointment booking and confirmation
+- 📝 Doctor-recommended test uploads and results review
+- 🧪 Lab report management
+- 📄 Prescription generation and digital download
+- 📞 Live video consultations using **Jitsi Meet**
+- ☁️ Medical document/image uploads via **Cloudinary**
+- 🧾 Full medical history tracking
+- 🧑 Patient profile with blood group, vitals, contact, and address
+- 📈 Clean, modern, responsive UI with Tailwind CSS
+- 🔄 Seamless multi-step medical workflow
+
+---
+
+## 🙌 About
+
+MedicoHubAI is designed to improve the healthcare journey for patients and doctors through intuitive UI, powerful AI, and reliable backend support. Whether you're a developer, hospital admin, or healthcare startup, MedicoHubAI serves as a strong foundation for intelligent medical platforms.
+
+---
+
+
 ## 📸 Screenshots
 
-> All image assets are placed in the `public/` folder.
+
 
 ### Authentication
 
@@ -171,42 +225,8 @@ MedicoHub is a modern full-stack hospital management system designed to streamli
 
 ---
 
-## ✅ Features
 
-- 🔐 Secure authentication for Patients and Doctors via Clerk
-- 🧑‍⚕️ Role-based dashboards (Doctor, Patient)
-- 📅 Real-time appointment booking and confirmation
-- 📝 Symptom input and doctor-recommended tests
-- 🧪 Upload and review lab reports
-- 📄 Prescription generation and patient download
-- 📞 Live video consultation using **Jitsi Meet**
-- 🧾 Full medical history tracking
-- 🧑 Patient profile with blood group, vitals, contact, and address
-- ☁️ Medical document/image uploads via **Cloudinary**
-- 📈 Clean, responsive, modern UI with Tailwind CSS
-- 🔄 Seamless step-by-step medical workflow
 
----
-
-## 💻 Technologies Used
-
-### Frontend
-- **Next.js** – React-based full-stack framework
-- **Tailwind CSS** – Utility-first CSS framework
-- **React Query** – API data fetching and caching
-- **Jitsi Meet API** – Video call integration
-- **Cloudinary** – Secure media upload and delivery
-
-### Backend
-- **Next.js API Routes** – Fullstack endpoints within the app
-- **Prisma ORM** – Database access and schema management
-- **PostgreSQL** – Relational database
-
-### Authentication & Hosting
-- **Clerk** – Authentication and user management
-- **Vercel / AWS EC2** – Deployment options
-
----
 
 ## ⚙️ Setup Instructions
 
