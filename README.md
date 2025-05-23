@@ -34,111 +34,205 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details. -->
-step-1
-login
-![alt text](image-2.png)
 
-register
-![alt text](image-3.png)
+# 🏥 MedicoHub – Hospital Management System
 
-step-2
-homepage
-![alt text](image-4.png)
-![alt text](image-5.png)
+MedicoHub is a modern full-stack hospital management system designed to streamline medical consultations, doctor-patient interactions, and lab workflows. It enables patients to register, consult doctors, upload medical documents, attend video consultations, receive prescriptions, and track medical history — all from a single platform.
 
-step-3
-Patient DashbOard
+---
+
+## 📸 Screenshots
+
+> All image assets are placed in the `public/` folder.
+
+### Authentication
+
+- **Login**  
+  ![](./public/image-2.png)
+
+- **Register**  
+  ![](./public/image-3.png)
+
+---
+
+### Homepage
+
+- Explore doctors and services  
+  ![](./public/image-4.png)  
+  ![](./public/image-5.png)
+
+---
+
+### Patient Dashboard
+
+- Central view of appointments, status, and access to consultation  
+  ![](./public/image-6.png)
+
+---
+
+### Symptom Submission
+
+- Step 1: Enter symptoms and additional notes  
+  ![](./public/image-9.png)  
+  - Submission Response:  
+  ![](./public/image-10.png)  
+  ![](./public/image-11.png)
+
+---
+
+### Appointment Scheduling
+
+- Step 2: View list of available doctors  
+  ![](./public/image-7.png)
+
+- Step 3: Book doctor appointment  
+  ![](./public/image-8.png)  
+  ![](./public/image-12.png)
+
+---
+
+### Doctor Dashboard & Confirmation
+
+- Doctor Login and Dashboard  
+  ![](./public/image-13.png)
+
+- Doctor confirms appointment  
+  ![](./public/image-14.png)
+
+---
+
+### Appointment Status for Patient
+
+- Patient checks confirmed status  
+  ![](./public/image-15.png)
+
+---
+
+### Video Consultation (Jitsi Integration)
+
+- Patient's video interface  
+  ![](./public/image-16.png)  
+  ![](./public/image-17.png)
+
+- Doctor's video interface  
+  ![](./public/image-25.png)
+
+---
+
+### Medical Uploads by Patient
+
+- Upload reports, images, or test results  
+  ![](./public/image-18.png)  
+  ![](./public/image-19.png)
+
+---
+
+### Doctor View & Recommendations
+
+- Doctor receives patient uploads  
+  ![](./public/image-20.png)
+
+- Upload recommended tests  
+  ![](./public/image-21.png)
+
+---
+
+### Patient Uploads Test Results
+
+- Upload section for lab results  
+  ![](./public/image-22.png)  
+  ![](./public/image-23.png)
+
+---
+
+### Prescription
+
+- Doctor receives test results and uploads prescription  
+  ![](./public/image-24.png)  
+  ![](./public/image-26.png)
+
+---
+
+### Pharmacy View for Patient
+
+- Prescription and suggested medications  
+  ![](./public/image-27.png)
+
+---
+
+### Patient Profile & History
+
+- View and update patient profile  
+  ![](./public/image-28.png)
+
+- Full medical history  
+  ![](./public/image-29.png)  
+  ![](./public/image-30.png)
+
+---
+
+## ✅ Features
+
+- 🔐 Secure authentication for Patients and Doctors via Clerk
+- 🧑‍⚕️ Role-based dashboards (Doctor, Patient)
+- 📅 Real-time appointment booking and confirmation
+- 📝 Symptom input and doctor-recommended tests
+- 🧪 Upload and review lab reports
+- 📄 Prescription generation and patient download
+- 📞 Live video consultation using **Jitsi Meet**
+- 🧾 Full medical history tracking
+- 🧑 Patient profile with blood group, vitals, contact, and address
+- ☁️ Medical document/image uploads via **Cloudinary**
+- 📈 Clean, responsive, modern UI with Tailwind CSS
+- 🔄 Seamless step-by-step medical workflow
+
+---
+
+## 💻 Technologies Used
+
+### Frontend
+- **Next.js** – React-based full-stack framework
+- **Tailwind CSS** – Utility-first CSS framework
+- **React Query** – API data fetching and caching
+- **Jitsi Meet API** – Video call integration
+- **Cloudinary** – Secure media upload and delivery
+
+### Backend
+- **Next.js API Routes** – Fullstack endpoints within the app
+- **Prisma ORM** – Database access and schema management
+- **PostgreSQL** – Relational database
+
+### Authentication & Hosting
+- **Clerk** – Authentication and user management
+- **Vercel / AWS EC2** – Deployment options
+
+---
+
+## ⚙️ Setup Instructions
+
+1. **Clone the Repository**
+   ```bash
+   git clone https://github.com/your-username/medicohub.git
+   cd medicohub ```
+
+2. ```npm install```
+
+3. **Environment Setup**
+    
+DATABASE_URL=your_postgresql_database_url
+NEXT_PUBLIC_CLERK_FRONTEND_API=your_clerk_frontend_api
+CLERK_API_KEY=your_clerk_backend_key
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_key
+CLOUDINARY_API_SECRET=your_secret
+
+4. Prisma Setup
+npx prisma db push
+
+5. Run Development Server
+npm run dev
 
 
+🙌 Author
+Developed with ❤️ by ASHUTOSH PATRO
 
-![alt text](image-6.png)
-
-step-4
-![alt text](image-9.png)
-
-step-4 response
-![alt text](image-10.png)
-![alt text](image-11.png)
-
-
-Schedule appointment
-step-5 List of doctors
-![alt text](image-7.png)
-
-
-step-6 Doctorbooking
-![alt text](image-8.png)
-![alt text](image-12.png)
-
-step-7 Doctor Login
-doctor Dashboard
-![alt text](image-13.png)
-
-Step-8 Doctor Confirms the appointment
-![alt text](image-14.png)
-
-Step-9 Patient check the appointment status 
-![alt text](image-15.png)
-
-step-10 vIDEO CALL
-![alt text](image-16.png)
-![alt text](image-17.png)
-by doctor
-![alt text](image-25.png)
-
-step-11 upload details
-![alt text](image-18.png)
-
-![alt text](image-19.png)
-
-step-12 doctor receives it 
-![alt text](image-20.png)
-
-step-13 doctor response and upload recommended tests
-![alt text](image-21.png)
-
-step-14 patient receives and upload the reports 
-![alt text](image-22.png)
-![alt text](image-23.png)
-
-step-15 doctor receives the reports and upload the prescription
-![alt text](image-24.png)
-![alt text](image-26.png)
-
-step-16 patient receives the prescription and a small pharmacy page which indiactes the prescibe medication
-![alt text](image-27.png)
-
-step-17 patient profile
-![alt text](image-28.png)
-
-step-18 medial history
-![alt text](image-29.png)
-![alt text](image-30.png)
-
-
-
-export default function handler(req, res) {
-  const { id } = req.query;
-
-  if (req.method === 'GET') {
-      res.status(200).json({ id, message: 'Author data fetched successfully' });
-  } else if (req.method === 'POST') {
-      res.status(200).json({ id, message: 'Author data sent successfully' });
-  } else if (req.method === 'PUT') {
-      res.status(200).json({ id, message: 'Author data updated successfully' });
-  } else if (req.method === 'DELETE') {
-      res.status(200).json({ id, message: 'Author data deleted successfully' });
-  }
-}
-
-// app/api/[id]/route.js
-import { NextResponse } from 'next/server';
-
-export async function GET(request, { params }) {
-  const { id } = params;
-
-  // Fetch data based on the 'id'
-  const data = { id: id, message: `Details for item ${id}` };
-
-  return NextResponse.json(data);
-}

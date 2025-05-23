@@ -21,10 +21,10 @@ const Navbar = () => {
   const navLinks = [
     { name: 'Home', href: '/' },
     { name: 'Dashboard', href: '/patient/dashboard' },
-    { name: 'About', href: '/about' },
-    { name: 'Services', href: '/services' },
+    // { name: 'About', href: '/about' },
+    { name: 'Services', href: '/patient/services' },
     { name: 'Doctors', href: '/patient/doctors' },
-    { name: 'Contact', href: '/contact' },
+    { name: 'Profile', href: '/patient/profile' },
   ];
 
   return (
@@ -62,7 +62,7 @@ const Navbar = () => {
 
           <div className="hidden md:flex items-center space-x-4">
             <Link
-              href="/appointment"
+              href="/patient/appointment"
               className="bg-gradient-to-r from-blue-500 to-cyan-400 text-white px-6 py-2 rounded-full hover:from-blue-600 hover:to-cyan-500 transition-colors duration-300 shadow-md flex items-center justify-center"
             >
               Book Appointment
