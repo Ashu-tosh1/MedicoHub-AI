@@ -114,7 +114,9 @@ MedicoHubAI is designed to improve the healthcare journey for patients and docto
 - Explore doctors and services  
   ![](./public/image-4.png)  
   ![](./public/image-5.png)
-
+   ![](./public/image-31.png)  
+  ![](./public/image-32.png)
+ ![](./public/image-33.png)
 ---
 
 ### Patient Dashboard
